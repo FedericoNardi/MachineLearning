@@ -130,7 +130,7 @@ def k_fold(x, y, z, Pol_deg, method, bias, k):
 size = 100
 x = np.random.rand(size,1)
 y = np.random.rand(size,1)
-z = FrankeFunction(x,y) + 0.1*np.random.randn(size,1)
+z = FrankeFunction(x,y) + 0.5*np.random.randn(size,1)
 
 
 # Start doing regression with OLS up to 5th degree
