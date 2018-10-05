@@ -104,10 +104,10 @@ def k_fold(x, y, z, Pol_deg, method, bias, k):
                 l = l + 1
         # Set up the regression
         if method == "OLS":
-            MeanSquare, r2score, Beta, VarBeta = LSregression(x,y,Pol_deg)
+            MeanSquare, r2score, Beta, VarBeta = LSregression(x,y,Pol_deg,"False")
         else: 
             if method == "ridge":
-                MeanSquare, r2score, Beta, VarBeta = Ridge(x,y,bias,Pol_deg)
+                MeanSquare, r2score, Beta, VarBeta = Ridge(x,y,bias,Pol_deg,"False")
             else:
                 print("ERROR: method not recognized")
         # Use the parameters obtained to make predictions and calculate MSE and R2score
@@ -144,9 +144,24 @@ for k in range(5):
     fitLS[name] = {}
     MeanSquareErrorsLS[k], r2scoresLS[k], fitLS[name]["Beta"], fitLS[name]["VarBeta"] = LSregression(x, y, degree,"False")
 
-"""
-xaxis = np.linspace(1,5,5)
+fitLS_boot = {}
+MeanSquareErrorsLS_boot = [0]*5
+r2scoresLS_boot = [0]*5
+for k in range(5):
+    degree=k+1
+    name = "poly" + str(k+1)
+    fitLS_boot[name] = {}
+    MeanSquareErrorsLS_boot[k], r2scoresLS_boot[k], fitLS_boot[name]["Beta"], fitLS_boot[name]["VarBeta"] = LSregression(x, y, degree,"True")
 
+
+xaxis = np.linspace(1,5,5)
+plt.subplot(211)
+plt.plot(xaxis,MeanSquareErrorsLS)
+plt.subplot(212)
+plt.plot(xaxis,MeanSquareErrorsLS_boot)
+plt.show()
+
+"""
 plt.subplot(211)
 plt.plot(degree, MeanSquareErrors,linestyle='--',linewidth=0.5,marker='o', color='r')
 plt.grid(True, which="both", linestyle='--')
