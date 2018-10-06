@@ -43,7 +43,7 @@ def r2score(prediction, model):
 
 # Mean square error function
 def MSE(prediction, model):
-	return np.sum( (model[i] - prediction[i])**2 for i in range(len(model)) )
+	return np.sum( (model[i] - prediction[i])**2 for i in range(len(model)) )/len(model)
 
 
 # Function for linear regression
@@ -53,7 +53,7 @@ def LinearRegression(x,y,z,degree, model, resampling):
 	if resampling == "True":
 		MeanSquareError = 0
 		rSquareScore = 0
-		sample_steps =400
+		sample_steps = 10
 		VarBeta = np.zeros([DataSet.shape[1],1])
 		Beta_boot = np.zeros([DataSet.shape[1],sample_steps])
 		Beta = np.zeros([DataSet.shape[1],1])
@@ -70,25 +70,32 @@ def LinearRegression(x,y,z,degree, model, resampling):
 		for i in range(DataSet.shape[1]):
 			Beta[i] = np.mean(Beta_boot[i]) 
 			VarBeta[i] = np.var(Beta_boot[i])
-			z_fit = DataSet.dot(Beta)
-			MeanSquareError_sample = MSE(z_fit, model)	
-			rSquareScore += r2score(z_fit, model)
+			print(Beta_boot[1:4])
+			foo 
+		z_fit = DataSet.dot(Beta)
+		MeanSquareError_sample = MSE(z_fit, model)	
+		rSquareScore = r2score(z_fit, model)
 	else:
 		H = (DataSet.T).dot(DataSet)
-		Beta = scl.linalg.inv(H).dot(DataSet.T).dot(z)
+		Hinv = scl.linalg.inv(H)
+		Beta = Hinv.dot(DataSet.T).dot(z)
 		z_fit = DataSet .dot(Beta)
 		MeanSquareError = MSE(z_fit, model)
-		VarBeta = np.array([[np.diag(scl.linalg.inv(H))[i]] for i in range(DataSet.shape[1])])*MeanSquareError*DataSet.shape[0]/(DataSet.shape[0]-degree)
+		VarBeta = np.array(np.diag(Hinv) *MeanSquareError * len(model)/(len(model)-DataSet.shape[1]-1))[np.newaxis] # Make estimator unbiased
+		VarBeta = VarBeta.T
 		rSquareScore = r2score(z_fit, model)
 	print("-------- fit with",degree,"th degree polynomial --------")
 	print("MSE: ",MeanSquareError,"\nr2 score: ", rSquareScore)
 	return MeanSquareError, rSquareScore, Beta, VarBeta
 
 
-# Generate data set
+
+
 # Initialize seed
 np.random.seed(42) #Life, Universe and Everything
-size = 500
+
+# Generate data set
+size = 10
 x = np.random.rand(size,1)
 y = np.random.rand(size,1)
 noise = 0.1*np.random.rand(size,1)
@@ -105,7 +112,6 @@ rSquareLS_res = [0]*5
 
 #for k in range(1):
 k=4
-random.seed(1)
 MeanSquareLS[k], rSquareLS[k], BetaLS, VarBetaLS = LinearRegression(x,y,z,k+1,z_franke,"False")
 MeanSquareLS_res[k], rSquareLS_res[k], BetaLS_res, VarBetaLS_res = LinearRegression(x,y,z,k+1,z_franke,"True")
 print("NO RESAMPLING:","\n",BetaLS)
