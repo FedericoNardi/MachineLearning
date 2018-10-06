@@ -77,23 +77,46 @@ def Ridge(x, y, z, biasR, degree, resampling):
     print(" R2 score: ", R2score, "\n")
     return MSE, R2score, np.transpose(Beta), VarBeta
 
-def Lasso(x, y, z, biasL, degree):
+def Lasso(x, y, z, biasL, degree, resampling):
     poly = PolynomialFeatures(degree=degree)
     data = poly.fit_transform(np.concatenate((x, y), axis=1))
     lasso_reg = linear_model.Lasso(alpha=biasL, fit_intercept=False)
-    lasso_reg.fit(data,z)
-    Blasso = lasso_reg.coef_
-    Beta = np.zeros((len(Blasso),1))
-    VarBeta = np.zeros((len(Blasso),1))
-    for i in range(len(Blasso)):
-        Beta[i] = Blasso[i]
-    z_fit = data .dot(Beta)
-    MSE = mean_squared_error(z,z_fit)
-    R2score = r2_score(z,z_fit)
-    for i in range(len(Beta)):
-        if Beta[i] != 0:
-            tmp = 1/np.abs(Beta[i])
-            VarBeta[i] = MSE*scl.linalg.inv(x.T.dot(x) + Beta[i]*tmp) .dot(x.T) .dot(x) .dot(scl.linalg.inv(x.T.dot(x) + Beta[i]*tmp))
+    if resampling == True:
+        k=1000
+        MSE = 0
+        R2score = 0
+        for i in range(k):
+            data = random.choices(pool, pool.shape[1])
+            lasso_reg.fit(data,z)
+            Blasso = lasso_reg.coef_
+            Beta = np.zeros((len(Blasso),1))
+            VarBeta = np.zeros((len(Blasso),1))
+            for i in range(len(Blasso)):
+                Beta[i] = Blasso[i]
+            z_fit = data .dot(Beta)
+            MSE_tmp = mean_squared_error(z,z_fit)
+            for i in range(len(Beta)):
+                if Beta[i] != 0:
+                    tmp = 1/np.abs(Beta[i])
+                    VarBeta[i] = MSE_tmp*scl.linalg.inv(x.T.dot(x) + Beta[i]*tmp) .dot(x.T) .dot(x) .dot(scl.linalg.inv(x.T.dot(x) + Beta[i]*tmp))
+            MSE += MSE_tmp
+            R2score += r2_score(z,z_fit)
+        MSE = MSE/k
+        R2score = R2score/k
+    else:
+        lasso_reg.fit(data,z)
+        Blasso = lasso_reg.coef_
+        Beta = np.zeros((len(Blasso),1))
+        VarBeta = np.zeros((len(Blasso),1))
+        for i in range(len(Blasso)):
+            Beta[i] = Blasso[i]
+        z_fit = data .dot(Beta)
+        MSE = mean_squared_error(z,z_fit)
+        R2score = r2_score(z,z_fit)
+        for i in range(len(Beta)):
+            if Beta[i] != 0:
+                tmp = 1/np.abs(Beta[i])
+                VarBeta[i] = MSE*scl.linalg.inv(x.T.dot(x) + Beta[i]*tmp) .dot(x.T) .dot(x) .dot(scl.linalg.inv(x.T.dot(x) + Beta[i]*tmp))
     print("-------",degree,"th degree polynomial","-------")
     print(" MSE: ", MSE)
     print(" R2 score: ", R2score, "\n")
@@ -146,7 +169,7 @@ def k_fold(x, y, z, Pol_deg, method, biasLambda, k):
                 MeanSquare_train, r2score_train, Beta_train, VarBeta_train = Ridge(x_train[:,[j]], y_train[:,[j]], z_train[:,[j]], biasLambda, Pol_deg, "False")
             else:
                if method == "lasso":
-                     MeanSquare_train, r2score_train, Beta_train, VarBeta_train = Lasso(x_train[:,[j]], y_train[:,[j]], z_train[:,[j]], biasLambda, Pol_deg)
+                     MeanSquare_train, r2score_train, Beta_train, VarBeta_train = Lasso(x_train[:,[j]], y_train[:,[j]], z_train[:,[j]], biasLambda, Pol_deg, "False")
                else:
                      print("ERROR: method not recognized")
         # Now I do the validation of the method
