@@ -65,13 +65,37 @@ def Ridge(x, y, z, biasR, degree):
     print(" MSE: ", MSE)
     print(" R2 score: ", R2score, "\n")
     return MSE, R2score, np.transpose(Beta), VarBeta
-    
+
+def Lasso(x, y, z, biasL, degree):
+    poly = PolynomialFeatures(degree=degree)
+    data = poly.fit_transform(np.concatenate((x, y), axis=1))
+    lasso_reg = linear_model.Lasso(alpha=biasL, fit_intercept=False)
+    lasso_reg.fit(data,z)
+    Blasso = lasso_reg.coef_
+    Beta = np.zeros((len(Blasso),1))
+    VarBeta = np.zeros((len(Blasso),1))
+    for i in range(len(Blasso)):
+        Beta[i] = Blasso[i]
+    z_fit = data .dot(Beta)
+    MSE = mean_squared_error(z,z_fit)
+    R2score = r2_score(z,z_fit)
+    for i in range(len(Beta)):
+        if Beta[i] != 0:
+            tmp = 1/np.abs(Beta[i])
+            VarBeta[i] = MSE*scl.linalg.inv(x.T.dot(x) + Beta[i]*tmp) .dot(x.T) .dot(x) .dot(scl.linalg.inv(x.T.dot(x) + Beta[i]*tmp))
+    print("-------",degree,"th degree polynomial","-------")
+    print(" MSE: ", MSE)
+    print(" R2 score: ", R2score, "\n")
+    print("-------",degree,"th degree polynomial","-------")
+    print(" MSE: ", MSE)
+    print(" R2 score: ", R2score, "\n")
+    return MSE, R2score, np.transpose(Beta), VarBeta
 # K-fold Function
 #def bootstrap():
 #    x = np.random.shuffle(x)
 
 
-def k_fold(x, y, z, Pol_deg, method, biasR, k):
+def k_fold(x, y, z, Pol_deg, method, biasLambda, k):
     n = len(x) 
     poly = PolynomialFeatures(degree=degree)
     data = poly.fit_transform(np.concatenate((x, y), axis=1))
@@ -108,11 +132,11 @@ def k_fold(x, y, z, Pol_deg, method, biasR, k):
             MeanSquare_train, r2score_train, Beta_train, VarBeta_train = LSregression(x_train[:,[j]], y_train[:,[j]], z_train[:,[j]], Pol_deg,"False")
         else: 
             if method == "ridge":
-                MeanSquare_train, r2score_train, Beta_train, VarBeta_train = Ridge(x_train[:,[j]], y_train[:,[j]], z_train[:,[j]], biasR, Pol_deg,"False")
+                MeanSquare_train, r2score_train, Beta_train, VarBeta_train = Ridge(x_train[:,[j]], y_train[:,[j]], z_train[:,[j]], biasLambda, Pol_deg)
             else:
-#                if method == "lasso":
-#                     MeanSquare, r2score, Beta, VarBeta = Lasso(x,y,bias,Pol_deg,"False")
-#                 else:
+               if method == "lasso":
+                     MeanSquare_train, r2score_train, Beta_train, VarBeta_train = Lasso(x_train[:,[j]], y_train[:,[j]], z_train[:,[j]], biasLambda, Pol_deg)
+               else:
                      print("ERROR: method not recognized")
         # Now I do the validation of the method
         data_test = poly.fit_transform(np.concatenate((x_test[:,[j]], y_test[:,[j]]), axis=1))
@@ -171,7 +195,7 @@ for k in range(5):
     degree=k+1
     name = "poly" + str(k+1)
     fitLS_boot[name] = {}
-    MeanSquareErrorsLS_boot[k], r2scoresLS_boot[k], fitLS_boot[name]["Beta"], fitLS_boot[name]["VarBeta"] = k_fold(x, y, z, degree, 'OLS', 0.1, 5)
+    MeanSquareErrorsLS_boot[k], r2scoresLS_boot[k], fitLS_boot[name]["Beta"], fitLS_boot[name]["VarBeta"] = k_fold(x, y, z, degree, "OLS", 0.01, 10)
 
 
 xaxis = np.linspace(1,5,5)

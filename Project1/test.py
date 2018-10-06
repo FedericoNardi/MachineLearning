@@ -108,8 +108,8 @@ k=4
 random.seed(1)
 MeanSquareLS[k], rSquareLS[k], BetaLS, VarBetaLS = LinearRegression(x,y,z,k+1,z_franke,"False")
 MeanSquareLS_res[k], rSquareLS_res[k], BetaLS_res, VarBetaLS_res = LinearRegression(x,y,z,k+1,z_franke,"True")
-print("NO RESAMPLING:","\n",BetaLS)
-print("RESAMPLING:","\n",BetaLS_res)
+print("NO RESAMPLING:","\n",VarBetaLS)
+print("RESAMPLING:","\n", VarBetaLS_res)
 """
 plt.plot(BetaLS,VarBetaLS,linestyle='none',marker='o')
 plt.plot(VarBetaLS_res,VarBetaLS_res, linestyle='none',marker='o')
