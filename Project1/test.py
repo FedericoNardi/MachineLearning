@@ -53,31 +53,32 @@ def LinearRegression(x,y,z,degree, model, resampling):
 	if resampling == "True":
 		MeanSquareError = 0
 		rSquareScore = 0
-		sample_steps = 500
-		VarBeta = np.array([[0.] for i in range(DataSet.shape[1])])
-		Beta = np.array([[0.] for i in range(DataSet.shape[1])])
+		sample_steps =400
+		VarBeta = np.zeros([DataSet.shape[1],1])
+		Beta_boot = np.zeros([DataSet.shape[1],sample_steps])
+		Beta = np.zeros([DataSet.shape[1],1])
+		pool = np.zeros(DataSet.shape)
+		z_sample = np.zeros([DataSet.shape[0],1])
 		for i in range(sample_steps):
-			pool = np.array([DataSet[random.randrange(DataSet.shape[0])].tolist() for i in range(DataSet.shape[0])])
+			for k in range(DataSet.shape[0]):
+				index = np.random.randint(DataSet.shape[0])
+				pool[k] = DataSet[index]
+				z_sample[k] = z[index]	
 			H = (pool.T).dot(pool)
-			Beta_sample = scl.linalg.inv(H).dot(pool.T).dot(z)
-			Beta += Beta_sample
-			z_fit = pool.dot(Beta_sample)
-			MeanSquareError_sample = MSE(z_fit, model)			
-			MeanSquareError += MeanSquareError_sample
-			VarBeta += np.array([[np.diag(H .dot(MeanSquareError_sample * np.eye(H.shape[1])))[i]] for i in range(DataSet.shape[1])])
+			Beta_sample = scl.linalg.inv(H).dot(pool.T).dot(z_sample)
+			Beta_boot.T[i] = Beta_sample.T
+		for i in range(DataSet.shape[1]):
+			Beta[i] = np.mean(Beta_boot[i]) 
+			VarBeta[i] = np.var(Beta_boot[i])
+			z_fit = DataSet.dot(Beta)
+			MeanSquareError_sample = MSE(z_fit, model)	
 			rSquareScore += r2score(z_fit, model)
-		MeanSquareError = MeanSquareError/sample_steps
-		rSquareScore = rSquareScore/sample_steps
-		Beta = Beta/sample_steps
-		VarBeta = VarBeta/sample_steps
-		print('gotcha')
 	else:
 		H = (DataSet.T).dot(DataSet)
 		Beta = scl.linalg.inv(H).dot(DataSet.T).dot(z)
 		z_fit = DataSet .dot(Beta)
 		MeanSquareError = MSE(z_fit, model)
-		VarBeta = np.diag(H .dot(MeanSquareError * np.eye(H.shape[1])))
-		print('hey madaffukka')
+		VarBeta = np.array([[np.diag(scl.linalg.inv(H))[i]] for i in range(DataSet.shape[1])])*MeanSquareError*DataSet.shape[0]/(DataSet.shape[0]-degree)
 		rSquareScore = r2score(z_fit, model)
 	print("-------- fit with",degree,"th degree polynomial --------")
 	print("MSE: ",MeanSquareError,"\nr2 score: ", rSquareScore)
@@ -86,12 +87,12 @@ def LinearRegression(x,y,z,degree, model, resampling):
 
 # Generate data set
 # Initialize seed
-random.seed(0)
+np.random.seed(42) #Life, Universe and Everything
 size = 500
-x = (np.array([random.random() for i in range(size)])[np.newaxis]).T
-y = (np.array([random.random() for i in range(size)])[np.newaxis]).T
-noise = 0.1*(np.array([random.random() for i in range(size)])[np.newaxis]).T
-z = FrankeFunction(x, y) + noise
+x = np.random.rand(size,1)
+y = np.random.rand(size,1)
+noise = 0.1*np.random.rand(size,1)
+z = FrankeFunction(x,y) + noise
 z_franke = FrankeFunction(x,y)
 
 
@@ -107,6 +108,8 @@ k=4
 random.seed(1)
 MeanSquareLS[k], rSquareLS[k], BetaLS, VarBetaLS = LinearRegression(x,y,z,k+1,z_franke,"False")
 MeanSquareLS_res[k], rSquareLS_res[k], BetaLS_res, VarBetaLS_res = LinearRegression(x,y,z,k+1,z_franke,"True")
+print("NO RESAMPLING:","\n",BetaLS)
+print("RESAMPLING:","\n",BetaLS_res)
 """
 plt.plot(BetaLS,VarBetaLS,linestyle='none',marker='o')
 plt.plot(VarBetaLS_res,VarBetaLS_res, linestyle='none',marker='o')
@@ -116,12 +119,6 @@ plt.show()
 """
 
 	
-
-
-
-
-
-
 
 
 
