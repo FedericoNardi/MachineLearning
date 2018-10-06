@@ -1,14 +1,10 @@
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 from sklearn.preprocessing import PolynomialFeatures
-from matplotlib.ticker import LinearLocator, FormatStrFormatter
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn import linear_model
-from sklearn.linear_model import LinearRegression
 import random
 import numpy as np
 import scipy as scl
-from sys import argv
 
 # Define functions
 
@@ -45,9 +41,9 @@ def LSregression(x, y, z, degree, resampling):
         MSE = mean_squared_error(z,z_fit)
         VarBeta = np.diag(H .dot(MSE * np.eye(H.shape[1])))
         R2score = r2_score(z,z_fit)
-        print("-------",degree,"th degree polynomial","-------")
-        print(" MSE: ", MSE)
-        print(" R2 score: ", R2score, "\n")
+    print("-------",degree,"th degree polynomial","-------")
+    print(" MSE: ", MSE)
+    print(" R2 score: ", R2score, "\n")
     return MSE, R2score, np.transpose(Beta), VarBeta
 
 
@@ -55,12 +51,27 @@ def LSregression(x, y, z, degree, resampling):
 def Ridge(x, y, z, biasR, degree):
     poly = PolynomialFeatures(degree=degree)
     data = poly.fit_transform(np.concatenate((x, y), axis=1))
-    H = data.T .dot(data)
-    Beta = scl.linalg.inv(H + biasR*H.shape[1]) .dot(data.T) .dot(z) 
-    z_fit = data .dot(Beta)
-    MSE = mean_squared_error(z,z_fit)
-    VarBeta = np.diag(H .dot(MSE * np.eye(H.shape[1])))
-    R2score = r2_score(z,z_fit)
+    if resampling == True:
+        k=1000
+        MSE = 0
+        R2score = 0
+        for i in range(k):
+            data = random.choices(pool, pool.shape[1])
+            H = data.T .dot(data)
+            Beta = scl.linalg.inv(H + biasR*H.shape[1]) .dot(data.T) .dot(z) 
+            z_fit = data .dot(Beta)
+            MSE += mean_squared_error(z,z_fit)
+            VarBeta = np.diag(H .dot(MSE * np.eye(H.shape[1])))
+            R2score += r2_score(z,z_fit)
+        MSE = MSE/k
+        R2score = R2score/k
+    else:
+        H = data.T .dot(data)
+        Beta = scl.linalg.inv(H + biasR*H.shape[1]) .dot(data.T) .dot(z) 
+        z_fit = data .dot(Beta)
+        MSE = mean_squared_error(z,z_fit)
+        VarBeta = np.diag(H .dot(MSE * np.eye(H.shape[1])))
+        R2score = r2_score(z,z_fit)
     print("-------",degree,"th degree polynomial","-------")
     print(" MSE: ", MSE)
     print(" R2 score: ", R2score, "\n")
