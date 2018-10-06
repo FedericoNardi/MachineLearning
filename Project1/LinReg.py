@@ -61,7 +61,7 @@ def Ridge(x, y, z, biasR, degree, resampling):
             Beta = scl.linalg.inv(H + biasR*H.shape[1]) .dot(data.T) .dot(z) 
             z_fit = data .dot(Beta)
             MSE += mean_squared_error(z,z_fit)
-            VarBeta = np.diag((H + biasR*H.shape[1]) .dot(x.T) .dot(MSE * np.eye(H.shape[1])) .dot(x) .dot((H + biasR*H.shape[1]).T))
+            VarBeta = MSE * np.diag((H + biasR*H.shape[1]) .dot(H) .dot((H + biasR*H.shape[1]).T))
             R2score += r2_score(z,z_fit)
         MSE = MSE/k
         R2score = R2score/k
@@ -70,7 +70,7 @@ def Ridge(x, y, z, biasR, degree, resampling):
         Beta = scl.linalg.inv(H + biasR*H.shape[1]) .dot(data.T) .dot(z) 
         z_fit = data .dot(Beta)
         MSE = mean_squared_error(z,z_fit)
-        VarBeta = np.diag((H + biasR*H.shape[1]) .dot(x.T) .dot(MSE * np.eye(H.shape[1])) .dot(x) .dot((H + biasR*H.shape[1]).T))
+        VarBeta = MSE * np.diag((H + biasR*H.shape[1]) .dot(H) .dot((H + biasR*H.shape[1]).T))
         R2score = r2_score(z,z_fit)
     print("-------",degree,"th degree polynomial","-------")
     print(" MSE: ", MSE)
@@ -88,6 +88,7 @@ def Lasso(x, y, z, biasL, degree, resampling):
         for i in range(k):
             data = random.choices(pool, pool.shape[1])
             lasso_reg.fit(data,z)
+            H = data.T .dot(data)
             Blasso = lasso_reg.coef_
             Beta = np.zeros((len(Blasso),1))
             VarBeta = np.zeros((len(Blasso),1))
@@ -95,16 +96,23 @@ def Lasso(x, y, z, biasL, degree, resampling):
                 Beta[i] = Blasso[i]
             z_fit = data .dot(Beta)
             MSE_tmp = mean_squared_error(z,z_fit)
-            for i in range(len(Beta)):
-                if Beta[i] != 0:
-                    tmp = 1/np.abs(Beta[i])
-                    VarBeta[i] = MSE_tmp*scl.linalg.inv(x.T.dot(x) + Beta[i]*tmp) .dot(x.T) .dot(x) .dot(scl.linalg.inv(x.T.dot(x) + Beta[i]*tmp))
+            tmp = np.eye(len(H))
+            check = 0
+            for j in range(len(Beta)):
+                if Beta[j] != 0:
+                    tmp[j,j] = 1/np.abs(Beta[i])
+                else:
+                    tmp[j,j] = 0
+                    check = 1
+            if check == 0:
+                VarBeta = MSE*np.diag(scl.linalg.inv(H + biasL*tmp) .dot(H) .dot(scl.linalg.inv(H + biasL*tmp)))
             MSE += MSE_tmp
             R2score += r2_score(z,z_fit)
         MSE = MSE/k
         R2score = R2score/k
     else:
         lasso_reg.fit(data,z)
+        H = data.T .dot(data)
         Blasso = lasso_reg.coef_
         Beta = np.zeros((len(Blasso),1))
         VarBeta = np.zeros((len(Blasso),1))
@@ -113,10 +121,16 @@ def Lasso(x, y, z, biasL, degree, resampling):
         z_fit = data .dot(Beta)
         MSE = mean_squared_error(z,z_fit)
         R2score = r2_score(z,z_fit)
-        for i in range(len(Beta)):
-            if Beta[i] != 0:
-                tmp = 1/np.abs(Beta[i])
-                VarBeta[i] = MSE*scl.linalg.inv(x.T.dot(x) + Beta[i]*tmp) .dot(x.T) .dot(x) .dot(scl.linalg.inv(x.T.dot(x) + Beta[i]*tmp))
+        tmp = np.eye(len(H))
+        check = 0
+        for j in range(len(Beta)):
+            if Beta[j] != 0:
+                tmp[j,j] = 1/np.abs(Beta[i])
+            else:
+                tmp[j,j] = 0
+                check = 1
+        if check == 0:
+            VarBeta = MSE*np.diag(scl.linalg.inv(H + biasL*tmp) .dot(H) .dot(scl.linalg.inv(H + biasL*tmp)))
     print("-------",degree,"th degree polynomial","-------")
     print(" MSE: ", MSE)
     print(" R2 score: ", R2score, "\n")
@@ -220,7 +234,7 @@ for k in range(5):
     degree=k+1
     name = "poly" + str(k+1)
     fitLS[name] = {}
-    MeanSquareErrorsLS[k], r2scoresLS[k], fitLS[name]["Beta"], fitLS[name]["VarBeta"] = LSregression(x, y, z, degree,"False")
+    MeanSquareErrorsLS[k], r2scoresLS[k], fitLS[name]["Beta"], fitLS[name]["VarBeta"] = Lasso(x, y, z, 0.01, degree,"True")
 
 fitLS_boot = {}
 MeanSquareErrorsLS_boot = [0]*5
@@ -230,7 +244,6 @@ for k in range(5):
     name = "poly" + str(k+1)
     fitLS_boot[name] = {}
     MeanSquareErrorsLS_boot[k], r2scoresLS_boot[k], fitLS_boot[name]["Beta"], fitLS_boot[name]["VarBeta"] = k_fold(x, y, z, degree, "OLS", 0.01, 10)
-
 
 xaxis = np.linspace(1,5,5)
 plt.subplot(211)
