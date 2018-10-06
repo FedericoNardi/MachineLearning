@@ -48,7 +48,7 @@ def LSregression(x, y, z, degree, resampling):
 
 
 # Ridge regression    
-def Ridge(x, y, z, biasR, degree):
+def Ridge(x, y, z, biasR, degree, resampling):
     poly = PolynomialFeatures(degree=degree)
     data = poly.fit_transform(np.concatenate((x, y), axis=1))
     if resampling == True:
@@ -61,7 +61,7 @@ def Ridge(x, y, z, biasR, degree):
             Beta = scl.linalg.inv(H + biasR*H.shape[1]) .dot(data.T) .dot(z) 
             z_fit = data .dot(Beta)
             MSE += mean_squared_error(z,z_fit)
-            VarBeta = np.diag(H .dot(MSE * np.eye(H.shape[1])))
+            VarBeta = np.diag((H + biasR*H.shape[1]) .dot(x.T) .dot(MSE * np.eye(H.shape[1])) .dot(x) .dot((H + biasR*H.shape[1]).T))
             R2score += r2_score(z,z_fit)
         MSE = MSE/k
         R2score = R2score/k
@@ -70,7 +70,7 @@ def Ridge(x, y, z, biasR, degree):
         Beta = scl.linalg.inv(H + biasR*H.shape[1]) .dot(data.T) .dot(z) 
         z_fit = data .dot(Beta)
         MSE = mean_squared_error(z,z_fit)
-        VarBeta = np.diag(H .dot(MSE * np.eye(H.shape[1])))
+        VarBeta = np.diag((H + biasR*H.shape[1]) .dot(x.T) .dot(MSE * np.eye(H.shape[1])) .dot(x) .dot((H + biasR*H.shape[1]).T))
         R2score = r2_score(z,z_fit)
     print("-------",degree,"th degree polynomial","-------")
     print(" MSE: ", MSE)
@@ -143,7 +143,7 @@ def k_fold(x, y, z, Pol_deg, method, biasLambda, k):
             MeanSquare_train, r2score_train, Beta_train, VarBeta_train = LSregression(x_train[:,[j]], y_train[:,[j]], z_train[:,[j]], Pol_deg,"False")
         else: 
             if method == "ridge":
-                MeanSquare_train, r2score_train, Beta_train, VarBeta_train = Ridge(x_train[:,[j]], y_train[:,[j]], z_train[:,[j]], biasLambda, Pol_deg)
+                MeanSquare_train, r2score_train, Beta_train, VarBeta_train = Ridge(x_train[:,[j]], y_train[:,[j]], z_train[:,[j]], biasLambda, Pol_deg, "False")
             else:
                if method == "lasso":
                      MeanSquare_train, r2score_train, Beta_train, VarBeta_train = Lasso(x_train[:,[j]], y_train[:,[j]], z_train[:,[j]], biasLambda, Pol_deg)
