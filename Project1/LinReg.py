@@ -8,7 +8,6 @@ from sklearn.linear_model import LinearRegression
 import random
 import numpy as np
 import scipy as scl
-from statistics import mean
 from sys import argv
 
 # Define functions
@@ -22,7 +21,7 @@ def FrankeFunction(x,y):
     return term1 + term2 + term3 + term4
 
 # Least squares regression    
-def LSregression(x, y, degree, resampling):
+def LSregression(x, y, z, degree, resampling):
     poly = PolynomialFeatures(degree=degree)
     data = poly.fit_transform(np.concatenate((x, y), axis=1))
     if resampling == True:
@@ -53,11 +52,11 @@ def LSregression(x, y, degree, resampling):
 
 
 # Ridge regression    
-def Ridge(x, y, bias, degree):
+def Ridge(x, y, z, biasR, degree):
     poly = PolynomialFeatures(degree=degree)
     data = poly.fit_transform(np.concatenate((x, y), axis=1))
     H = data.T .dot(data)
-    Beta = scl.linalg.inv(H + bias*H.shape[1]) .dot(data.T) .dot(z) 
+    Beta = scl.linalg.inv(H + biasR*H.shape[1]) .dot(data.T) .dot(z) 
     z_fit = data .dot(Beta)
     MSE = mean_squared_error(z,z_fit)
     VarBeta = np.diag(H .dot(MSE * np.eye(H.shape[1])))
@@ -66,13 +65,13 @@ def Ridge(x, y, bias, degree):
     print(" MSE: ", MSE)
     print(" R2 score: ", R2score, "\n")
     return MSE, R2score, np.transpose(Beta), VarBeta
-
+    
 # K-fold Function
 #def bootstrap():
 #    x = np.random.shuffle(x)
 
 
-def k_fold(x, y, z, Pol_deg, method, bias, k):
+def k_fold(x, y, z, Pol_deg, method, biasR, k):
     n = len(x) 
     poly = PolynomialFeatures(degree=degree)
     data = poly.fit_transform(np.concatenate((x, y), axis=1))
@@ -83,46 +82,67 @@ def k_fold(x, y, z, Pol_deg, method, bias, k):
     R2S_sampling = 0
     Beta_sampling = np.zeros((1,data.shape[1]))
     VarBeta_sampling = np.zeros((1,data.shape[1]))
+    x_train= np.zeros((len_fold*(k-1),k))
+    y_train = np.zeros((len_fold*(k-1),k))
+    z_train = np.zeros((len_fold*(k-1),k))
+    x_test = np.zeros((len_fold,k))
+    y_test = np.zeros((len_fold,k))
+    z_test = np.zeros((len_fold,k))
+    z_regr  = np.zeros((len_fold,k))
+    z_anal = np.zeros((n,k))
     for j in range(k):
-        x_train= np.zeros((80,1))
-        y_train = np.zeros((80,1))
-        z_train = np.zeros((80,1))
-        x_test = np.zeros((20,1))
-        y_test = np.zeros((20,1))
-        z_test = np.zeros((20,1))
         l = 0
         # Create training and test data
         for i in range(len_fold):
-            x_test[i] = x[j*len_fold + i]
-            y_test[i] = y[j*len_fold + i]
-            z_test[i] = z[j*len_fold + i]
+            x_test[i,j] = x[j*len_fold + i]
+            y_test[i,j] = y[j*len_fold + i]
+            z_test[i,j] = z[j*len_fold + i]
         for i in range(n):
             if (i < j*len_fold) or (i > (j + 1)*len_fold):
-                x_train[l] = x[i]
-                y_train[l] = y[i]
-                z_train[l] = z[i]
+                x_train[l,j] = x[i]
+                y_train[l,j] = y[i]
+                z_train[l,j] = z[i]
                 l = l + 1
         # Set up the regression
         if method == "OLS":
-            MeanSquare, r2score, Beta, VarBeta = LSregression(x,y,Pol_deg,"False")
+            MeanSquare_train, r2score_train, Beta_train, VarBeta_train = LSregression(x_train[:,[j]], y_train[:,[j]], z_train[:,[j]], Pol_deg,"False")
         else: 
             if method == "ridge":
-                MeanSquare, r2score, Beta, VarBeta = Ridge(x,y,bias,Pol_deg,"False")
+                MeanSquare_train, r2score_train, Beta_train, VarBeta_train = Ridge(x_train[:,[j]], y_train[:,[j]], z_train[:,[j]], biasR, Pol_deg,"False")
             else:
-                print("ERROR: method not recognized")
+#                if method == "lasso":
+#                     MeanSquare, r2score, Beta, VarBeta = Lasso(x,y,bias,Pol_deg,"False")
+#                 else:
+                     print("ERROR: method not recognized")
+        # Now I do the validation of the method
+        data_test = poly.fit_transform(np.concatenate((x_test[:,[j]], y_test[:,[j]]), axis=1))
+        z_regr[:,[j]] = data_test .dot(np.transpose(Beta_train));
+        MSE[j] = mean_squared_error(z_test[:,[j]], z_regr[:,[j]])
+        R2S[j] = r2_score(z_test[:,[j]],z_regr[:,[j]])
         # Use the parameters obtained to make predictions and calculate MSE and R2score
-        MSE[j] = MeanSquare 
-        R2S[j] = r2score
         MSE_sampling = MSE_sampling + MSE[j]
         R2S_sampling = R2S_sampling + R2S[j]
-        Beta_sampling = Beta_sampling + Beta
-        VarBeta_sampling = VarBeta_sampling + VarBeta
-
+        Beta_sampling = Beta_sampling + Beta_train
+        VarBeta_sampling = VarBeta_sampling + VarBeta_train
+        # I set up the data for the bias and the variance
+        z_anal[:, [j]] = data .dot(np.transpose(Beta_train));
     # Take the mean value
     MSE_sampling = MSE_sampling/k
     R2S_sampling = R2S_sampling/k
     Beta_sampling = Beta_sampling/k
     VarBeta_sampling = VarBeta_sampling/k
+    # Error, Bias, Variance
+    error = np.mean( np.mean((z - z_anal)**2, axis=1, keepdims=True) )
+    bias = np.mean( (z - np.mean(z_anal, axis=1, keepdims=True))**2 )
+    variance = np.mean( np.var(z_anal, axis=1, keepdims=True) )
+    print("MSE")
+    print(MSE_sampling)
+    print("Error")
+    print(error)
+    print("Bias")
+    print(bias)
+    print("Variance")
+    print(variance)
     return MSE_sampling, R2S_sampling, Beta_sampling, VarBeta_sampling
 
 
@@ -142,7 +162,7 @@ for k in range(5):
     degree=k+1
     name = "poly" + str(k+1)
     fitLS[name] = {}
-    MeanSquareErrorsLS[k], r2scoresLS[k], fitLS[name]["Beta"], fitLS[name]["VarBeta"] = LSregression(x, y, degree,"False")
+    MeanSquareErrorsLS[k], r2scoresLS[k], fitLS[name]["Beta"], fitLS[name]["VarBeta"] = LSregression(x, y, z, degree,"False")
 
 fitLS_boot = {}
 MeanSquareErrorsLS_boot = [0]*5
@@ -151,7 +171,7 @@ for k in range(5):
     degree=k+1
     name = "poly" + str(k+1)
     fitLS_boot[name] = {}
-    MeanSquareErrorsLS_boot[k], r2scoresLS_boot[k], fitLS_boot[name]["Beta"], fitLS_boot[name]["VarBeta"] = LSregression(x, y, degree,"True")
+    MeanSquareErrorsLS_boot[k], r2scoresLS_boot[k], fitLS_boot[name]["Beta"], fitLS_boot[name]["VarBeta"] = k_fold(x, y, z, degree, 'OLS', 0.1, 5)
 
 
 xaxis = np.linspace(1,5,5)
