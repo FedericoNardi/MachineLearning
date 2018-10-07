@@ -24,7 +24,7 @@ def FrankeFunction(x,y):
     term4 = -0.2*np.exp(-(9*x-4)**2 - (9*y-7)**2)
     return term1 + term2 + term3 + term4
 
-9# OLS linear regression
+# OLS linear regression
 def LinearRegressionOLS(x,y,z,degree,resampling):
     poly = PolynomialFeatures(degree=degree)
     data = poly.fit_transform(np.concatenate((x, y), axis=1))

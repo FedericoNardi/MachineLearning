@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn import linear_model
+from sklearn.linear_model import LinearRegression
 import random
 import numpy as np
 import scipy as scl
@@ -23,6 +24,7 @@ def LinearRegressionOLS(x,y,z,degree,resampling):
     poly = PolynomialFeatures(degree=degree)
     data = poly.fit_transform(np.concatenate((x, y), axis=1))
     if resampling==True:
+        print("------ OLS with resampling ------")
         sample_steps = 10
         VarBeta = np.zeros([data.shape[1],1])
         Beta_boot = np.zeros([data.shape[1],sample_steps])
@@ -34,21 +36,22 @@ def LinearRegressionOLS(x,y,z,degree,resampling):
                 index = np.random.randint(data.shape[0])
                 pool[k] = data[index]
                 z_sample[k] = z[index]
-
             U, D, Vt = scl.linalg.svd(pool)
-            V = Vt.T
+            V = Vt.T    
             diag = np.zeros([V.shape[1],U.shape[1]])
             diagVar = np.zeros([V.shape[0],V.shape[1]])
             np.fill_diagonal(diag,D**(-1))
             np.fill_diagonal(diagVar,D**(-2))
             Beta_sample = V.dot(diag).dot(U.T).dot(z) 
             Beta_boot.T[i] = Beta_sample.T
+
         for i in range(data.shape[1]):
-            Beta[i] = np.mean(Beta_boot[i]) 
-            VarBeta[i] = np.var(Beta_boot[i])
-        zlin = data .dot(Beta)
+	        Beta[i] = np.mean(Beta_boot[i])
+        	VarBeta[i] = np.var(Beta_boot[i])
+        	zlin = data .dot(Beta)
         MSE = mean_squared_error(z,zlin)
     else:
+        print("------ OLS without resampling ------")
         U, D, Vt = scl.linalg.svd(data)
         V = Vt.T
         diag = np.zeros([V.shape[1],U.shape[1]])
@@ -69,7 +72,7 @@ def LinearRegressionOLS(x,y,z,degree,resampling):
 def SKLcheckLS(x,y,z,degree):
     poly = PolynomialFeatures(degree=degree)
     data = poly.fit_transform(np.concatenate((x, y), axis=1))
-    linreg = SKregression(fit_intercept=False)
+    linreg = LinearRegression(fit_intercept=False)
     linreg.fit(data,z)
     return linreg
 
@@ -148,40 +151,42 @@ def k_fold(x, y, z, Pol_deg, method, biasLambda, k):
     print(variance)
     return MSE_sampling, R2S_sampling, Beta_sampling, VarBeta_sampling
 
-    def Ridge(x, y, z, biasR, degree, resampling):
-        poly = PolynomialFeatures(degree=degree)
-        data = poly.fit_transform(np.concatenate((x, y), axis=1))
-        if resampling==True:
-            sample_steps = 10
-            VarBeta = np.zeros([data.shape[1],1])
-            Beta_boot = np.zeros([data.shape[1],sample_steps])
-            Beta = np.zeros([data.shape[1],1])
-            pool = np.zeros(data.shape)
-            z_sample = np.zeros([data.shape[0],1])
-            for i in range(sample_steps):
-                for k in range(data.shape[0]):
-                    index = np.random.randint(data.shape[0])
-                    pool[k] = data[index]
-                    z_sample[k] = z[index]
-                H = data.T .dot(data)
-                Beta_sample = scl.linalg.inv(H + biasR*np.eye(H.shape[0])) .dot(data.T) .dot(z) 
-                Beta_boot.T[i] = Beta_sample.T
-            for i in range(data.shape[1]):
-                Beta[i] = np.mean(Beta_boot[i]) 
-                VarBeta[i] = np.var(Beta_boot[i])
-            zlin = data .dot(Beta)
-            MSE = mean_squared_error(z,zlin)
-            R2score = r2_score(z,zlin)
-        else:
+def Ridge(x, y, z, biasR, degree, resampling):
+    poly = PolynomialFeatures(degree=degree)
+    data = poly.fit_transform(np.concatenate((x, y), axis=1))
+    if resampling==True:
+        print("------ RIDGE with resampling ------")
+        sample_steps = 10
+        VarBeta = np.zeros([data.shape[1],1])
+        Beta_boot = np.zeros([data.shape[1],sample_steps])
+        Beta = np.zeros([data.shape[1],1])
+        pool = np.zeros(data.shape)
+        z_sample = np.zeros([data.shape[0],1])
+        for i in range(sample_steps):
+            for k in range(data.shape[0]):
+                index = np.random.randint(data.shape[0])
+                pool[k] = data[index]
+                z_sample[k] = z[index]
             H = data.T .dot(data)
-            Beta = scl.linalg.inv(H + biasR*np.eye(H.shape[0])) .dot(data.T) .dot(z) 
-            z_fit = data .dot(Beta)
-            MSE = mean_squared_error(z,z_fit)
-            VarBeta = MSE * np.diag((H + biasR*H.shape[1]) .dot(H) .dot((H + biasR*H.shape[1]).T))
-            R2score = r2_score(z,z_fit)
-        print("-------",degree,"th degree polynomial","-------")
-        print(" MSE: ", MSE)
-        print(" R2 score: ", R2score, "\n")
+            Beta_sample = scl.linalg.inv(H + biasR*np.eye(H.shape[0])) .dot(data.T) .dot(z)
+            Beta_boot.T[i] = Beta_sample.T
+        for i in range(data.shape[1]):
+            Beta[i] = np.mean(Beta_boot[i]) 
+            VarBeta[i] = np.var(Beta_boot[i])
+        zlin = data .dot(Beta)
+        MSE = mean_squared_error(z,zlin)
+        R2score = r2_score(z,zlin)
+    else:
+        print("------ RIDGE without resampling ------")
+        H = data.T .dot(data)
+        Beta = scl.linalg.inv(H + biasR*np.eye(H.shape[1])) .dot(data.T) .dot(z) 
+        z_fit = data .dot(Beta)
+        MSE = mean_squared_error(z,z_fit)
+        VarBeta = MSE * np.diag((H + biasR*H.shape[1]) .dot(H) .dot((H + biasR*H.shape[1]).T))
+        R2score = r2_score(z,z_fit)
+    print("-------",degree,"th degree polynomial","-------")
+    print(" MSE: ", MSE)
+    print(" R2 score: ", R2score, "\n")
     return MSE, R2score, np.transpose(Beta), VarBeta
 
 def Lasso(x, y, z, biasL, degree, resampling):
@@ -189,6 +194,7 @@ def Lasso(x, y, z, biasL, degree, resampling):
     data = poly.fit_transform(np.concatenate((x, y), axis=1))
     lasso_reg = linear_model.Lasso(alpha=biasL, fit_intercept=False)
     if resampling==True:
+        print("------ LASSO with resampling ------")
         sample_steps = 10
         VarBeta = np.zeros([data.shape[1],1])
         Beta_boot = np.zeros([data.shape[1],sample_steps])
@@ -210,6 +216,7 @@ def Lasso(x, y, z, biasL, degree, resampling):
         MSE = mean_squared_error(z,zlin)
         R2score = r2_score(z,zlin)
     else:
+        print("------ RIDGE without resampling ------")
         lasso_reg.fit(data,z)
         H = data.T .dot(data)
         Blasso = lasso_reg.coef_
@@ -235,28 +242,45 @@ def Lasso(x, y, z, biasL, degree, resampling):
     print(" R2 score: ", R2score, "\n")
     return MSE, R2score, np.transpose(Beta), VarBeta
 
-
-
+# initialize seed
+np.random.seed(42) # Life, Universe and Everything
 
 # Producing Data set for the Franke function
-
 size = 500
 x = np.random.rand(size,1)
 y = np.random.rand(size,1)
 z = FrankeFunction(x,y) + 0.1*np.random.randn(size,1)
 
-print("Results of the linear regression")
 
-# Fith with OLS
-degree = 5
+# Fit with OLS without resampling
+MSElin = [0]*5
+R2Slin = [0]*5
+for k in range(5):
+	degree = k+1
+	Blin, VarBlin, MSElin[k], R2Slin[k] = LinearRegressionOLS(x,y,z,degree, False )
+	# Check with scikit-learn
+	linreg = SKLcheckLS(x,y,z,degree)
+	Check = linreg.coef_
+"""
+# Plot MSE nd R2 score for OLS
+plt.figure()
+plt.subplot(211)
+plt.title(r"OLS without resampling - $MSE$ and $R^2$ score")
+degree = np.linspace(1,5,5)
+plt.plot(degree, MSElin)
+axs = plt.gca()
+axs.set_ylabel(r"$MSE$")
+plt.grid()
+plt.subplot(212)
+plt.plot(degree, R2Slin)
+axs = plt.gca()
+axs.set_ylabel(r"$R^2$ score")
+axs.set_xlabel(r"poly degree")
+plt.grid()
+#plt.show()
+plt.savefig("figures/OLS")
 
-Blin1, VarBlin1, MSElin1, R2Slin1 = LinearRegressionOLS(x,y,z,degree, True )
-
-# Fit with SKL to check
-linreg1 = SKLcheckLS(x,y,z,degree)
-
-# Print a log
-Blin1_check = linreg1.coef_
+# Print a log to check parameters with scikit-learn
 print("------- Polynomial degree = ",degree, "-------")
 print("My fit parameters")
 print(Blin1)
@@ -264,7 +288,99 @@ print(VarBlin1)
 print("SKlearn fit parameters")
 print(Blin1_check.T)
 
-# Fit with Lasso
-lassobias=0.5
+# Bootstrap resampling on OLS
+MSElin = [0]*5
+R2Slin = [0]*5
+for k in range(5):
+	degree = k+1
+	Bname = "Blin" + str(degree)
+	Varname = "VarBlin" + str(degree)
+	Checkname = "Blin" + str(degree) + "_check"
+	Bname, Varname, MSElin[k], R2Slin[k] = LinearRegressionOLS(x,y,z,degree, True )
 
-A,B,C,D = Lasso(x,y,z,lassobias,5,False)
+# Plot MSE nd R2 score for OLS w/ bootstrap
+plt.figure()
+plt.subplot(211)
+plt.title(r"OLS wit resampling - $MSE$ and $R^2$ score")
+degree = np.linspace(1,5,5)
+plt.plot(degree, MSElin)
+axs = plt.gca()
+axs.set_ylabel(r"$MSE$")
+plt.grid()
+plt.subplot(212)
+plt.plot(degree, R2Slin)
+axs = plt.gca()
+axs.set_ylabel(r"$R^2$ score")
+axs.set_xlabel(r"poly degree")
+plt.grid()
+#plt.show()
+plt.savefig("figures/OLS_boot")
+"""
+"""
+# Plot fitting domain
+plt.figure()
+plt.plot(x,y,linestyle="none",marker='.',markersize=8)
+plt.show()
+"""
+"""
+# Ridge regression
+# reinitialize z data to study noise, redundant but easier
+z = FrankeFunction(x,y) + 0.1*np.random.randn(size,1)
+
+
+parameter = np.logspace(-9,-4,6)
+MSE = np.zeros([6,5])
+r2score = np.zeros([6,5])
+BetaRidge = {}
+VarRidge = {}
+for k in range(5):
+	degree = k+1
+	for j in range(len(parameter)):
+		MSE[j][k], r2score[j][k], BetaRidge[str(j)], VarRidge[str(j)] = Ridge(x, y, z, parameter[j], degree, False )
+
+par = np.array(np.linspace(1,BetaRidge["0"].shape[1],BetaRidge["0"].shape[1]))[np.newaxis]
+plt.figure()
+for j in range(len(parameter)):
+	plt.plot(par.T,BetaRidge[str(j)].T,linestyle='--', marker='o', markersize=3,linewidth=0.5)
+plt.plot(par.T, Blin,linestyle=':',marker='x',linewidth=1)
+plt.grid()	
+plt.legend([r"$\lambda=10^{-9}$",r"$\lambda=10^{-8}$",r"$\lambda=10^{-7}$",r"$\lambda=10^{-6}$,"r"$\lambda=10^{-5}$"r",$\lambda=10^{-4}$",r"$OLS$"],loc=4,fontsize=8)
+axs = plt.gca()
+axs.set_xlim(0,25)
+plt.title(r"$\beta_j$ parameters when varying ridge $\lambda$")
+plt.xlabel(r"-th parameter")
+plt.ylabel(r"$\beta_j$")
+plt.savefig("figures/Ridge_parameters_noise05")
+#plt.show()
+"""
+
+# Lasso regression
+# reinitialize z data to study noise, redundant but easier
+z = FrankeFunction(x,y) + 0.1*np.random.randn(size,1)
+
+
+parameter = np.logspace(-9,-4,6)
+MSE = np.zeros([6,5])
+r2score = np.zeros([6,5])
+BetaLasso = {}
+VarLasso = {}
+for k in range(5):
+	degree = k+1
+	for j in range(len(parameter)):
+		MSE[j][k], r2score[j][k], BetaLasso[str(j)], VarLasso[str(j)] = Lasso(x, y, z, parameter[j], degree, False )
+
+par = np.array(np.linspace(1,BetaLasso["0"].shape[1],BetaLasso["0"].shape[1]))[np.newaxis]
+plt.figure()
+for j in range(len(parameter)):
+	plt.plot(par.T,BetaLasso[str(j)].T,linestyle='--', marker='o', markersize=3,linewidth=0.5)
+#plt.plot(par.T, Blin,linestyle=':',marker='x',linewidth=1)
+plt.grid()	
+plt.legend([r"$\lambda=10^{-9}$",r"$\lambda=10^{-8}$",r"$\lambda=10^{-7}$",r"$\lambda=10^{-6}$,"r"$\lambda=10^{-5}$"r",$\lambda=10^{-4}$"])#,r"$OLS$"],loc=4,fontsize=8)
+axs = plt.gca()
+axs.set_xlim(0,25)
+plt.title(r"$\beta_j$ parameters when varying lasso $\lambda$")
+plt.xlabel(r"-th parameter")
+plt.ylabel(r"$\beta_j$")
+plt.savefig("figures/Lasso_parameters")
+#plt.show()
+
