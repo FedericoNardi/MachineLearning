@@ -99,13 +99,15 @@ def Lasso(x, y, z, biasL, degree, resampling):
             tmp = np.eye(len(H))
             check = 0
             for j in range(len(Beta)):
-                if Beta[j] != 0:
+                if np.abs(Beta[i]) != 0:
                     tmp[j,j] = 1/np.abs(Beta[i])
                 else:
                     tmp[j,j] = 0
                     check = 1
             if check == 0:
                 VarBeta = MSE*np.diag(scl.linalg.inv(H + biasL*tmp) .dot(H) .dot(scl.linalg.inv(H + biasL*tmp)))
+            else:
+                print("Beta values too sparse. It's not possible to calculate their variance.")
             MSE += MSE_tmp
             R2score += r2_score(z,z_fit)
         MSE = MSE/k
@@ -124,13 +126,15 @@ def Lasso(x, y, z, biasL, degree, resampling):
         tmp = np.eye(len(H))
         check = 0
         for j in range(len(Beta)):
-            if Beta[j] != 0:
+            if np.abs(Beta[i]) != 0:
                 tmp[j,j] = 1/np.abs(Beta[i])
             else:
                 tmp[j,j] = 0
                 check = 1
         if check == 0:
             VarBeta = MSE*np.diag(scl.linalg.inv(H + biasL*tmp) .dot(H) .dot(scl.linalg.inv(H + biasL*tmp)))
+        else:
+            print("Beta values too sparse. It's not possible to calculate their variance.")
     print("-------",degree,"th degree polynomial","-------")
     print(" MSE: ", MSE)
     print(" R2 score: ", R2score, "\n")
@@ -234,7 +238,7 @@ for k in range(5):
     degree=k+1
     name = "poly" + str(k+1)
     fitLS[name] = {}
-    MeanSquareErrorsLS[k], r2scoresLS[k], fitLS[name]["Beta"], fitLS[name]["VarBeta"] = Ridge(x, y, z, 0.01, degree,"True")
+    MeanSquareErrorsLS[k], r2scoresLS[k], fitLS[name]["Beta"], fitLS[name]["VarBeta"] = Lasso(x, y, z, 0.01, degree,"True")
 
 fitLS_boot = {}
 MeanSquareErrorsLS_boot = [0]*5
