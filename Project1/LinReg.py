@@ -30,7 +30,7 @@ def LSregression(x, y, z, degree, resampling):
             Beta = scl.linalg.inv(H) .dot(data.T) .dot(z)
             z_fit = data .dot(Beta)
             MSE += mean_squared_error(z,z_fit)
-            VarBeta = np.diag(H .dot(MSE * np.eye(H.shape[1])))
+            VarBeta = np.diag(scl.linalg.inv(H) .dot(MSE * np.eye(H.shape[1])))
             R2score += r2_score(z,z_fit)
         MSE = MSE/k
         R2score = R2score/k
@@ -39,7 +39,7 @@ def LSregression(x, y, z, degree, resampling):
         Beta = scl.linalg.inv(H) .dot(data.T) .dot(z)
         z_fit = data .dot(Beta)
         MSE = mean_squared_error(z,z_fit)
-        VarBeta = np.diag(H .dot(MSE * np.eye(H.shape[1])))
+        VarBeta = np.diag(scl.linalg.inv(H) .dot(MSE * np.eye(H.shape[1])))
         R2score = r2_score(z,z_fit)
     print("-------",degree,"th degree polynomial","-------")
     print(" MSE: ", MSE)
@@ -61,7 +61,7 @@ def Ridge(x, y, z, biasR, degree, resampling):
             Beta = scl.linalg.inv(H + biasR*H.shape[1]) .dot(data.T) .dot(z) 
             z_fit = data .dot(Beta)
             MSE += mean_squared_error(z,z_fit)
-            VarBeta = MSE * np.diag((H + biasR*H.shape[1]) .dot(H) .dot((H + biasR*H.shape[1]).T))
+            VarBeta = MSE * np.diag(scl.linalg.inv(H + biasR*H.shape[1]) .dot(H) .dot(scl.linalg.inv(H + biasR*H.shape[1]).T))
             R2score += r2_score(z,z_fit)
         MSE = MSE/k
         R2score = R2score/k
@@ -70,7 +70,7 @@ def Ridge(x, y, z, biasR, degree, resampling):
         Beta = scl.linalg.inv(H + biasR*H.shape[1]) .dot(data.T) .dot(z) 
         z_fit = data .dot(Beta)
         MSE = mean_squared_error(z,z_fit)
-        VarBeta = MSE * np.diag((H + biasR*H.shape[1]) .dot(H) .dot((H + biasR*H.shape[1]).T))
+        VarBeta = MSE * np.diag(scl.linalg.inv(H + biasR*H.shape[1]) .dot(H) .dot(scl.linalg.inv(H + biasR*H.shape[1]).T))
         R2score = r2_score(z,z_fit)
     print("-------",degree,"th degree polynomial","-------")
     print(" MSE: ", MSE)
@@ -234,7 +234,7 @@ for k in range(5):
     degree=k+1
     name = "poly" + str(k+1)
     fitLS[name] = {}
-    MeanSquareErrorsLS[k], r2scoresLS[k], fitLS[name]["Beta"], fitLS[name]["VarBeta"] = Lasso(x, y, z, 0.01, degree,"True")
+    MeanSquareErrorsLS[k], r2scoresLS[k], fitLS[name]["Beta"], fitLS[name]["VarBeta"] = Ridge(x, y, z, 0.01, degree,"True")
 
 fitLS_boot = {}
 MeanSquareErrorsLS_boot = [0]*5
