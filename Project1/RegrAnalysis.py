@@ -261,8 +261,7 @@ terrain1 = terrain1[0:100,0:100]
 plt.figure()
 plt.imshow(terrain1, cmap='gray')
 plt.savefig("fittingfunction")
-foo
-plt.show()
+#plt.show()
 terrain1 = np.reshape(terrain1,-1)
 
 # Intialize grid
@@ -415,7 +414,7 @@ plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\
 plt.grid()
 plt.subplot(212)
 plt.grid()
-plt.savefig("figures/ridge/ridge_err")#+"noise"+str(n+1))
+plt.savefig("realdata/ridge/ridge_err")#+"noise"+str(n+1))
 #plt.show()
 
 # Plot parameters for different lambdas
@@ -428,7 +427,7 @@ for j in range(5):
 	plt.grid()
 	plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\lambda=$"+str(parameter[2]),r"$\lambda=$"+str(parameter[3])])
 	plt.title(r"Ridge parameters for different $\lambda$.") #Noise factor = "+str(noise[n]))
-	plt.savefig("figures/ridge/ridge_parameters"+str(j+1)) #+"noise"+str(n+1))
+	plt.savefig("realdata/ridge/ridge_parameters"+str(j+1)) #+"noise"+str(n+1))
 	#plt.show()
 
 
@@ -470,7 +469,7 @@ plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\
 plt.grid()
 plt.subplot(212)
 plt.grid()
-plt.savefig("figures/ridge/ridge_boot_err")#+"noise"+str(n+1))
+plt.savefig("realdata/ridge/ridge_boot_err")#+"noise"+str(n+1))
 #plt.show()
 
 # Plot parameters for different lambdas
@@ -483,7 +482,7 @@ for j in range(5):
 	plt.grid()
 	plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\lambda=$"+str(parameter[2]),r"$\lambda=$"+str(parameter[3])])
 	plt.title(r"Ridge parameters for different $\lambda$.")#" Noise factor = "+str(noise[n]))
-	plt.savefig("figures/ridge/ridge_boot_parameters"+str(j+1))#+"noise"+str(n+1))
+	plt.savefig("realdata/ridge/ridge_boot_parameters"+str(j+1))#+"noise"+str(n+1))
 	#plt.show()
 
 
@@ -525,7 +524,7 @@ plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\
 plt.grid()
 plt.subplot(212)
 plt.grid()
-plt.savefig("figures/lasso/lasso_err")#+"noise"+str(n+1))
+plt.savefig("realdata/lasso/lasso_err")#+"noise"+str(n+1))
 #plt.show()
 # Plot parameters for different lambdas
 for j in range(5):
@@ -537,7 +536,7 @@ for j in range(5):
 	plt.grid()
 	plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\lambda=$"+str(parameter[2]),r"$\lambda=$"+str(parameter[3])])
 	plt.title(r"Lasso parameters for different $\lambda$.")#" Noise factor = "+str(noise[n]))
-	plt.savefig("figures/lasso/lasso_parameters"+str(j+1))#+"noise"+str(n+1))
+	plt.savefig("realdata/lasso/lasso_parameters"+str(j+1))#+"noise"+str(n+1))
 	#plt.show()
 
 
