@@ -260,6 +260,8 @@ terrain1 = imread('terrain1.tif')
 terrain1 = terrain1[0:100,0:100]
 plt.figure()
 plt.imshow(terrain1, cmap='gray')
+plt.savefig("fittingfunction")
+foo
 plt.show()
 terrain1 = np.reshape(terrain1,-1)
 
