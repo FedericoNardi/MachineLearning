@@ -16,6 +16,29 @@ def FrankeFunction(x,y):
     term4 = -0.2*np.exp(-(9*x-4)**2 - (9*y-7)**2)
     return term1 + term2 + term3 + term4
 
+# OLS linear regression
+def LinearRegressionOLS(x,y,z,degree):
+    poly = PolynomialFeatures(degree=degree)
+    data = poly.fit_transform(np.concatenate((x, y), axis=1))
+    U, D, Vt = scl.linalg.svd(data)
+    V = Vt.T
+    diag = np.zeros([V.shape[1],U.shape[1]])
+    diagVar = np.zeros([V.shape[0],V.shape[1]])
+    np.fill_diagonal(diag,D**(-1))
+    np.fill_diagonal(diagVar,D**(-2))
+    Beta = V.dot(diag).dot(U.T).dot(z) 
+    H = data.T .dot(data)
+    zlin = data .dot(Beta)
+    MSE = mean_squared_error(z,zlin)
+    VarBeta = MSE*(np.diag(V.dot(diagVar).dot(Vt))[np.newaxis]).T
+    print(VarBeta)
+    R2S = r2_score(z,zlin)
+    print("-----Polynomial degree = ", degree,"-----")
+    print("MSE %g" % MSE)
+    print("RS2 %g" % R2S)
+    return Beta, VarBeta, MSE, R2S
+
+
 # Least squares regression    
 def LSregression(x, y, z, degree, resampling):
     poly = PolynomialFeatures(degree=degree)
