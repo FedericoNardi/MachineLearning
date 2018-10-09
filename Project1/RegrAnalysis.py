@@ -68,9 +68,9 @@ def LinearRegressionOLS(x,y,z,degree,resampling):
     print("-----Polynomial degree = ", degree,"-----")
     print("MSE %g" % MSE)
     print("RS2 %g" % R2S)
-    error = np.mean( np.mean((z - zlin)**2, axis=1, keepdims=True) )
-    bias = np.mean( (z - np.mean(zlin, axis=1, keepdims=True))**2 )
-    variance = np.mean( np.var(zlin, axis=1, keepdims=True) )
+    error = np.sum((zlin - z)**2)/data.shape[0] #np.mean( np.mean((z - zlin)**2, axis=1, keepdims=True) )
+    variance = np.sum( (zlin - np.mean(zlin))**2 )/data.shape[0] #np.mean( (z - np.mean(zlin, axis=1, keepdims=True))**2 )
+    bias = np.sum((z - np.mean(zlin))**2)/data.shape[0] #np.mean( np.var(zlin, axis=1, keepdims=True) )
     print("MSE")
     print(MSE)
     print("Error")
@@ -152,9 +152,9 @@ def k_fold(x, y, z, Pol_deg, method, biasLambda, k):
     Beta_sampling = Beta_sampling/k
     VarBeta_sampling = VarBeta_sampling/k
     # Error, Bias, Variance
-    error = np.mean( np.mean((z - z_anal)**2, axis=1, keepdims=True) )
-    bias = np.mean( (z - np.mean(z_anal, axis=1, keepdims=True))**2 )
-    variance = np.mean( np.var(z_anal, axis=1, keepdims=True) )
+    error = np.sum((zlin - z)**2)/data.shape[0] #np.mean( np.mean((z - zlin)**2, axis=1, keepdims=True) )
+    variance = np.sum( (zlin - np.mean(zlin))**2 )/data.shape[0] #np.mean( (z - np.mean(zlin, axis=1, keepdims=True))**2 )
+    bias = np.sum((z - np.mean(zlin))**2)/data.shape[0] #np.mean( np.var(zlin, axis=1, keepdims=True) )
     print("MSE")
     print(MSE_sampling)
     print("Error")
@@ -170,7 +170,7 @@ def Ridge(x, y, z, biasR, degree, resampling):
     data = poly.fit_transform(np.concatenate((x, y), axis=1))
     if resampling==True:
         print("------ RIDGE with resampling ------")
-        sample_steps = 10
+        sample_steps = 100
         VarBeta = np.zeros([data.shape[1],1])
         Beta_boot = np.zeros([data.shape[1],sample_steps])
         Beta = np.zeros([data.shape[1],1])
@@ -187,23 +187,23 @@ def Ridge(x, y, z, biasR, degree, resampling):
         for i in range(data.shape[1]):
             Beta[i] = np.mean(Beta_boot[i]) 
             VarBeta[i] = np.var(Beta_boot[i])
-        z_fit = data .dot(Beta)
-        MSE = mean_squared_error(z,z_fit)
-        R2score = r2_score(z,z_fit)
+        zlin = data .dot(Beta)
+        MSE = mean_squared_error(z,zlin)
+        R2score = r2_score(z,zlin)
     else:
         print("------ RIDGE without resampling ------")
         H = data.T .dot(data)
         Beta = scl.linalg.inv(H + biasR*np.eye(H.shape[1])) .dot(data.T) .dot(z) 
-        z_fit = data .dot(Beta)
-        MSE = mean_squared_error(z,z_fit)
+        zlin = data .dot(Beta)
+        MSE = mean_squared_error(z,zlin)
         VarBeta = MSE * np.diag((H + biasR*H.shape[1]) .dot(H) .dot((H + biasR*H.shape[1]).T))
-        R2score = r2_score(z,z_fit)
+        R2score = r2_score(z,zlin)
     print("-------",degree,"th degree polynomial","-------")
     print(" MSE: ", MSE)
     print(" R2 score: ", R2score, "\n")
-    error = np.mean( np.mean((z - z_fit)**2, axis=1, keepdims=True) )
-    bias = np.mean( (z - np.mean(z_fit, axis=1, keepdims=True))**2 )
-    variance = np.mean( np.var(z_fit, axis=1, keepdims=True) )
+    error = np.sum((zlin - z)**2)/data.shape[0] #np.mean( np.mean((z - zlin)**2, axis=1, keepdims=True) )
+    variance = np.sum( (zlin - np.mean(zlin))**2 )/data.shape[0] #np.mean( (z - np.mean(zlin, axis=1, keepdims=True))**2 )
+    bias = np.sum((z - np.mean(zlin))**2)/data.shape[0] #np.mean( np.var(zlin, axis=1, keepdims=True) )
     print("MSE")
     print(MSE)
     print("Error")
@@ -220,7 +220,7 @@ def Lasso(x, y, z, biasL, degree, resampling):
     lasso_reg = linear_model.Lasso(alpha=biasL, fit_intercept=False)
     if resampling==True:
         print("------ LASSO with resampling ------")
-        sample_steps = 10
+        sample_steps = 100
         VarBeta = np.zeros([data.shape[1],1])
         Beta_boot = np.zeros([data.shape[1],sample_steps])
         Beta = np.zeros([data.shape[1],1])
@@ -265,9 +265,9 @@ def Lasso(x, y, z, biasL, degree, resampling):
     print("-------",degree,"th degree polynomial","-------")
     print(" MSE: ", MSE)
     print(" R2 score: ", R2score, "\n")
-    error = np.mean( np.mean((z - zlin)**2, axis=1, keepdims=True) )
-    bias = np.mean( (z - np.mean(zlin, axis=1, keepdims=True))**2 )
-    variance = np.mean( np.var(zlin, axis=1, keepdims=True) )
+    error = np.sum((zlin - z)**2)/data.shape[0] #np.mean( np.mean((z - zlin)**2, axis=1, keepdims=True) )
+    variance = np.sum( (zlin - np.mean(zlin))**2 )/data.shape[0] #np.mean( (z - np.mean(zlin, axis=1, keepdims=True))**2 )
+    bias = np.sum((z - np.mean(zlin))**2)/data.shape[0] #np.mean( np.var(zlin, axis=1, keepdims=True) )
     print("MSE")
     print(MSE)
     print("Error")
@@ -305,7 +305,7 @@ for k in range(5):
 for j in range(5):
 	xaxis = np.linspace(1,len(BetaOLS[str(j)]),len(BetaOLS[str(j)]))
 	plt.figure()
-	plt.plot(xaxis,BetaOLS[str(j)],linestyle=':',marker='o')
+	plt.errorbar(xaxis,BetaOLS[str(j)],np.sqrt(VarOLS[str(j)]),linestyle=':',marker='o')
 	plt.grid()
 	title = r"OLS fit - weights $\beta_j$ for "+str(j+1)+". degree polynomial"
 	plt.title(title)
@@ -356,7 +356,7 @@ for k in range(5):
 for j in range(5):
 	xaxis = np.linspace(1,len(BetaOLS[str(j)]),len(BetaOLS[str(j)]))
 	plt.figure()
-	plt.plot(xaxis,BetaOLS[str(j)],linestyle=':',marker='o')
+	plt.errorbar(xaxis,BetaOLS[str(j)],np.sqrt(VarOLS[str(j)]),linestyle=':',marker='o')
 	plt.grid()
 	title = r"OLS fit with resampling - weights $\beta_j$ for "+str(j+1)+". degree polynomial"
 	plt.title(title)
@@ -392,216 +392,214 @@ plt.savefig("realdata/OLS/OLS_boot_err")
 
 # Ridge regression
 # reinitialize z data to study noise, redundant but easier
-#noise = [0.001, 0.01, 0.1, 0.5]
-#for n in range(len(noise)):
-#z = FrankeFunction(x,y) + noise[n]*np.random.randn(size,1)
+noise = [0.001, 0.01, 0.1, 0.5]
+for n in range(len(noise)):
+    z = FrankeFunction(x,y) + noise[n]*np.random.randn(size,1)
 
-parameter = [ 1e-8, 1e-6, 1e-4, 1e-2]#np.logspace(-9,-4,6)
-MSE = [0]*5
-r2score = [0]*5
-BetaRidge = {}
-VarRidge = {}
+    parameter = [ 1e-8, 1e-6, 1e-4, 1e-2]
+    MSE = [0]*5
+    r2score = [0]*5
+    BetaRidge = {}
+    VarRidge = {}
 
-# Plot MSE and R2 score for different lambdas
-plt.figure()
-for k in range(len(parameter)):
-	BetaRidge[str(k)] = {}
-	VarRidge[str(k)] = {}
-	for j in range(5):
-		degree = j+1
-		MSE[j], r2score[j], BetaRidge[str(k)][str(j)], VarRidge[str(k)][str(j)] = Ridge(x,y,z,parameter[k], degree, False)
-	# Plot ridge errors
-	plt.subplot(211)
-	plt.title(r"Ridge regression - $MSE$ and $R^2$ score. ")#Noise factor = "+str(noise[n]))
-	degree = np.linspace(1,5,5)
-	plt.plot(degree, MSE)
-	axs = plt.gca()
-	axs.set_ylabel(r"$MSE$")
-	plt.subplot(212)
-	plt.plot(degree, r2score)
-	axs = plt.gca()
-	axs.set_ylabel(r"$R^2$ score")
-	axs.set_xlabel(r"poly degree")
-plt.subplot(211)
-plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\lambda=$"+str(parameter[2]),r"$\lambda=$"+str(parameter[3])])	
-plt.grid()
-plt.subplot(212)
-plt.grid()
-plt.savefig("realdata/ridge/ridge_err")#+"noise"+str(n+1))
-#plt.show()
+    # Plot MSE and R2 score for different lambdas
+    plt.figure()
+    for k in range(len(parameter)):
+        BetaRidge[str(k)] = {}
+        VarRidge[str(k)] = {}
+        for j in range(5):
+            degree = j+1
+            MSE[j], r2score[j], BetaRidge[str(k)][str(j)], VarRidge[str(k)][str(j)] = Ridge(x,y,z,parameter[k], degree, False)
+           # Plot ridge errors
+        plt.subplot(211)
+        plt.title(r"Ridge regression - $MSE$ and $R^2$ score. Noise factor = "+str(noise[n]))
+        degree = np.linspace(1,5,5)
+        plt.plot(degree, MSE)
+        axs = plt.gca()
+        axs.set_ylabel(r"$MSE$")
+        plt.subplot(212)
+        plt.plot(degree, r2score)
+        axs = plt.gca()
+        axs.set_ylabel(r"$R^2$ score")
+        axs.set_xlabel(r"poly degree")
+    plt.subplot(211)
+    plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\lambda=$"+str(parameter[2]),r"$\lambda=$"+str(parameter[3])])	
+    plt.grid()
+    plt.subplot(212)
+    plt.grid()
+    plt.savefig("franke/ridge/ridge_err"+"noise"+str(n+1))
+    #plt.show()
 
 # Plot parameters for different lambdas
-for j in range(5):
-	xaxis = np.arange(1,len(BetaRidge["0"][str(j)].T)+1)
-	plt.figure()
-	for k in range(1,len(parameter)):
-		plt.plot(xaxis,BetaRidge[str(k)][str(j)].T, linestyle=':',marker='.',linewidth=0.5)
-	plt.plot(xaxis,BetaRidge["0"][str(j)].T,linestyle=':',marker='x')
-	plt.grid()
-	plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\lambda=$"+str(parameter[2]),r"$\lambda=$"+str(parameter[3])])
-	plt.title(r"Ridge parameters for different $\lambda$.") #Noise factor = "+str(noise[n]))
-	plt.savefig("realdata/ridge/ridge_parameters"+str(j+1)) #+"noise"+str(n+1))
-	#plt.show()
+    for j in range(5):
+        xaxis = np.arange(1,len(BetaRidge["0"][str(j)].T)+1)
+        plt.figure()
+        for k in range(1,len(parameter)):
+            plt.plot(xaxis,BetaRidge[str(k)][str(j)].T, linestyle=':',marker='.',linewidth=0.5)
+        plt.plot(xaxis,BetaRidge["0"][str(j)].T,linestyle=':',marker='x')
+        plt.grid()
+        plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\lambda=$"+str(parameter[2]),r"$\lambda=$"+str(parameter[3])])
+        plt.title(r"Ridge parameters for different $\lambda$.Noise factor = "+str(noise[n]))
+        plt.savefig("realdata/ridge/ridge_parameters"+str(j+1)+"noise"+str(n+1))
+       #plt.show()
 
 
 
 # Ridge regression with resampling
 # reinitialize z data to study noise, redundant but easier
-#noise = [0.001, 0.01, 0.1, 0.5]
-#for n in range(len(noise)):
-#	z = FrankeFunction(x,y) + noise[n]*np.random.randn(size,1)
+noise = [0.001, 0.01, 0.1, 0.5]
+for n in range(len(noise)):
+    z = FrankeFunction(x,y) + noise[n]*np.random.randn(size,1)
+    parameter = [ 1e-8, 1e-6, 1e-4, 1e-2]#np.logspace(-9,-4,6)
+    MSE = [0]*5
+    r2score = [0]*5
+    BetaRidge = {}
+    VarRidge = {}
 
-parameter = [ 1e-8, 1e-6, 1e-4, 1e-2]#np.logspace(-9,-4,6)
-MSE = [0]*5
-r2score = [0]*5
-BetaRidge = {}
-VarRidge = {}
+    # Plot MSE and R2 score for different lambdas
+    plt.figure()
+    for k in range(len(parameter)):
+    	BetaRidge[str(k)] = {}
+    	VarRidge[str(k)] = {}
+    	for j in range(5):
+    		degree = j+1
+    		MSE[j], r2score[j], BetaRidge[str(k)][str(j)], VarRidge[str(k)][str(j)] = Ridge(x,y,z,parameter[k], degree, True)
+    	# Plot ridge errors
+    	plt.subplot(211)
+    	plt.title(r"Ridge with resampling - $MSE$ and $R^2$ score."" Noise factor = "+str(noise[n]))
+    	degree = np.linspace(1,5,5)
+    	plt.plot(degree, MSE)
+    	axs = plt.gca()
+    	axs.set_ylabel(r"$MSE$")
+    	plt.subplot(212)
+    	plt.plot(degree, r2score)
+    	axs = plt.gca()
+    	axs.set_ylabel(r"$R^2$ score")
+    	axs.set_xlabel(r"poly degree")
+    plt.subplot(211)
+    plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\lambda=$"+str(parameter[2]),r"$\lambda=$"+str(parameter[3])])	
+    plt.grid()
+    plt.subplot(212)
+    plt.grid()
+    plt.savefig("realdata/ridge/ridge_boot_err"+"noise"+str(n+1))
+    #plt.show()
 
-# Plot MSE and R2 score for different lambdas
-plt.figure()
-for k in range(len(parameter)):
-	BetaRidge[str(k)] = {}
-	VarRidge[str(k)] = {}
-	for j in range(5):
-		degree = j+1
-		MSE[j], r2score[j], BetaRidge[str(k)][str(j)], VarRidge[str(k)][str(j)] = Ridge(x,y,z,parameter[k], degree, True)
-	# Plot ridge errors
-	plt.subplot(211)
-	plt.title(r"Ridge with resampling - $MSE$ and $R^2$ score.")#" Noise factor = "+str(noise[n]))
-	degree = np.linspace(1,5,5)
-	plt.plot(degree, MSE)
-	axs = plt.gca()
-	axs.set_ylabel(r"$MSE$")
-	plt.subplot(212)
-	plt.plot(degree, r2score)
-	axs = plt.gca()
-	axs.set_ylabel(r"$R^2$ score")
-	axs.set_xlabel(r"poly degree")
-plt.subplot(211)
-plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\lambda=$"+str(parameter[2]),r"$\lambda=$"+str(parameter[3])])	
-plt.grid()
-plt.subplot(212)
-plt.grid()
-plt.savefig("realdata/ridge/ridge_boot_err")#+"noise"+str(n+1))
-#plt.show()
-
-# Plot parameters for different lambdas
-for j in range(5):
-	xaxis = np.arange(1,len(BetaRidge["0"][str(j)].T)+1)
-	plt.figure()
-	for k in range(1,len(parameter)):
-		plt.plot(xaxis,BetaRidge[str(k)][str(j)].T, linestyle=':',marker='.',linewidth=0.5)
-	plt.plot(xaxis,BetaRidge["0"][str(j)].T,linestyle=':',marker='x')
-	plt.grid()
-	plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\lambda=$"+str(parameter[2]),r"$\lambda=$"+str(parameter[3])])
-	plt.title(r"Ridge parameters for different $\lambda$.")#" Noise factor = "+str(noise[n]))
-	plt.savefig("realdata/ridge/ridge_boot_parameters"+str(j+1))#+"noise"+str(n+1))
-	#plt.show()
+    # Plot parameters for different lambdas
+    for j in range(5):
+    	xaxis = np.arange(1,len(BetaRidge["0"][str(j)].T)+1)
+    	plt.figure()
+    	for k in range(1,len(parameter)):
+    		plt.plot(xaxis,BetaRidge[str(k)][str(j)].T, linestyle=':',marker='.',linewidth=0.5)
+    	plt.plot(xaxis,BetaRidge["0"][str(j)].T,linestyle=':',marker='x')
+    	plt.grid()
+    	plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\lambda=$"+str(parameter[2]),r"$\lambda=$"+str(parameter[3])])
+    	plt.title(r"Ridge parameters for different $\lambda$. Noise factor = "+str(noise[n]))
+    	plt.savefig("realdata/ridge/ridge_boot_parameters"+str(j+1)+"noise"+str(n+1))
+    	#plt.show()
 
 
 
 # Lasso regression
 # reinitialize z data to study noise, redundant but easier
-#noise = [0.001, 0.01, 0.1, 0.5]
-#for n in range(len(noise)):
-#	z = FrankeFunction(x,y) + noise[n]*np.random.randn(size,1)
+noise = [0.001, 0.01, 0.1, 0.5]
+for n in range(len(noise)):
+    z = FrankeFunction(x,y) + noise[n]*np.random.randn(size,1)
 
-parameter = [ 1e-8, 1e-6, 1e-4, 1e-2]#np.logspace(-9,-4,6)
-MSE = [0]*5
-r2score = [0]*5
-BetaLasso = {}
-VarLasso = {}
+    parameter = [ 1e-8, 1e-6, 1e-4, 1e-2]#np.logspace(-9,-4,6)
+    MSE = [0]*5
+    r2score = [0]*5
+    BetaLasso = {}
+    VarLasso = {}
 
-# Plot MSE and R2 score for different lambdas
-plt.figure()
-for k in range(len(parameter)):
-	BetaLasso[str(k)] = {}
-	VarLasso[str(k)] = {}
-	for j in range(5):
-		degree = j+1
-		MSE[j], r2score[j], BetaLasso[str(k)][str(j)], VarLasso[str(k)][str(j)] = Lasso(x,y,z,parameter[k], degree, False)
-	# Plot ridge errors
-	plt.subplot(211)
-	plt.title(r"Lasso regression - $MSE$ and $R^2$ score.")#" Noise factor = "+str(noise[n]))
-	degree = np.linspace(1,5,5)
-	plt.plot(degree, MSE)
-	axs = plt.gca()
-	axs.set_ylabel(r"$MSE$")
-	plt.subplot(212)
-	plt.plot(degree, r2score)
-	axs = plt.gca()
-	axs.set_ylabel(r"$R^2$ score")
-	axs.set_xlabel(r"poly degree")
-plt.subplot(211)
-plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\lambda=$"+str(parameter[2]),r"$\lambda=$"+str(parameter[3])])	
-plt.grid()
-plt.subplot(212)
-plt.grid()
-plt.savefig("realdata/lasso/lasso_err")#+"noise"+str(n+1))
-#plt.show()
-# Plot parameters for different lambdas
-for j in range(5):
-	xaxis = np.arange(1,len(BetaLasso["0"][str(j)].T)+1)
-	plt.figure()
-	for k in range(1,len(parameter)):
-		plt.plot(xaxis,BetaLasso[str(k)][str(j)].T, linestyle=':',marker='.',linewidth=0.5)
-	plt.plot(xaxis,BetaLasso["0"][str(j)].T,linestyle=':',marker='x')
-	plt.grid()
-	plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\lambda=$"+str(parameter[2]),r"$\lambda=$"+str(parameter[3])])
-	plt.title(r"Lasso parameters for different $\lambda$.")#" Noise factor = "+str(noise[n]))
-	plt.savefig("realdata/lasso/lasso_parameters"+str(j+1))#+"noise"+str(n+1))
-	#plt.show()
+    # Plot MSE and R2 score for different lambdas
+    plt.figure()
+    for k in range(len(parameter)):
+    	BetaLasso[str(k)] = {}
+    	VarLasso[str(k)] = {}
+    	for j in range(5):
+    		degree = j+1
+    		MSE[j], r2score[j], BetaLasso[str(k)][str(j)], VarLasso[str(k)][str(j)] = Lasso(x,y,z,parameter[k], degree, False)
+    	# Plot ridge errors
+    	plt.subplot(211)
+    	plt.title(r"Lasso regression - $MSE$ and $R^2$ score. Noise factor = "+str(noise[n]))
+    	degree = np.linspace(1,5,5)
+    	plt.plot(degree, MSE)
+    	axs = plt.gca()
+    	axs.set_ylabel(r"$MSE$")
+    	plt.subplot(212)
+    	plt.plot(degree, r2score)
+    	axs = plt.gca()
+    	axs.set_ylabel(r"$R^2$ score")
+    	axs.set_xlabel(r"poly degree")
+    plt.subplot(211)
+    plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\lambda=$"+str(parameter[2]),r"$\lambda=$"+str(parameter[3])])	
+    plt.grid()
+    plt.subplot(212)
+    plt.grid()
+    plt.savefig("realdata/lasso/lasso_err"+"noise"+str(n+1))
+    #plt.show()
+    # Plot parameters for different lambdas
+    for j in range(5):
+    	xaxis = np.arange(1,len(BetaLasso["0"][str(j)].T)+1)
+    	plt.figure()
+    	for k in range(1,len(parameter)):
+    		plt.plot(xaxis,BetaLasso[str(k)][str(j)].T, linestyle=':',marker='.',linewidth=0.5)
+    	plt.plot(xaxis,BetaLasso["0"][str(j)].T,linestyle=':',marker='x')
+    	plt.grid()
+    	plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\lambda=$"+str(parameter[2]),r"$\lambda=$"+str(parameter[3])])
+    	plt.title(r"Lasso parameters for different $\lambda$. Noise factor = "+str(noise[n]))
+    	plt.savefig("realdata/lasso/lasso_parameters"+str(j+1)+"noise"+str(n+1))
+    	#plt.show()
 
 
 # Lasso regression with resampling
 # reinitialize z data to study noise, redundant but easier
-#noise = [0.001, 0.01, 0.1, 0.5]
-#for n in range(len(noise)):
-#	z = FrankeFunction(x,y) + noise[n]*np.random.randn(size,1)
+noise = [0.001, 0.01, 0.1, 0.5]
+for n in range(len(noise)):
+    z = FrankeFunction(x,y) + noise[n]*np.random.randn(size,1)
+    parameter = [0, 1e-8, 1e-6, 1e-4, 1e-2]#np.logspace(-9,-4,6)
+    MSE = [0]*5
+    r2score = [0]*5
+    BetaLasso = {}
+    VarLasso = {}
 
-parameter = [0, 1e-8, 1e-6, 1e-4, 1e-2]#np.logspace(-9,-4,6)
-MSE = [0]*5
-r2score = [0]*5
-BetaLasso = {}
-VarLasso = {}
+    # Plot MSE and R2 score for different lambdas
+    plt.figure()
+    for k in range(len(parameter)):
+    	BetaLasso[str(k)] = {}
+    	VarLasso[str(k)] = {}
+    	for j in range(5):
+    		degree = j+1
+    		MSE[j], r2score[j], BetaLasso[str(k)][str(j)], VarLasso[str(k)][str(j)] = Lasso(x,y,z,parameter[k], degree, True)
+    	# Plot ridge errors
+    	plt.subplot(211)
+    	plt.title(r"Lasso with resampling - $MSE$ and $R^2$ score. Noise factor = "+str(noise[n]))
+    	degree = np.linspace(1,5,5)
+    	plt.plot(degree, MSE)
+    	axs = plt.gca()
+    	axs.set_ylabel(r"$MSE$")
+    	plt.subplot(212)
+    	plt.plot(degree, r2score)
+    	axs = plt.gca()
+    	axs.set_ylabel(r"$R^2$ score")
+    	axs.set_xlabel(r"poly degree")
+    plt.subplot(211)
+    plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\lambda=$"+str(parameter[2]),r"$\lambda=$"+str(parameter[3])])	
+    plt.grid()
+    plt.subplot(212)
+    plt.grid()
+    plt.savefig("realdata/lasso/lasso_boot_err"+"noise"+str(n+1))
+    #plt.show()
 
-# Plot MSE and R2 score for different lambdas
-plt.figure()
-for k in range(len(parameter)):
-	BetaLasso[str(k)] = {}
-	VarLasso[str(k)] = {}
-	for j in range(5):
-		degree = j+1
-		MSE[j], r2score[j], BetaLasso[str(k)][str(j)], VarLasso[str(k)][str(j)] = Lasso(x,y,z,parameter[k], degree, True)
-	# Plot ridge errors
-	plt.subplot(211)
-	plt.title(r"Lasso with resampling - $MSE$ and $R^2$ score.")#" Noise factor = "+str(noise[n]))
-	degree = np.linspace(1,5,5)
-	plt.plot(degree, MSE)
-	axs = plt.gca()
-	axs.set_ylabel(r"$MSE$")
-	plt.subplot(212)
-	plt.plot(degree, r2score)
-	axs = plt.gca()
-	axs.set_ylabel(r"$R^2$ score")
-	axs.set_xlabel(r"poly degree")
-plt.subplot(211)
-plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\lambda=$"+str(parameter[2]),r"$\lambda=$"+str(parameter[3])])	
-plt.grid()
-plt.subplot(212)
-plt.grid()
-plt.savefig("realdata/lasso/lasso_boot_err")#+"noise"+str(n+1))
-#plt.show()
-
-# Plot parameters for different lambdas
-for j in range(5):
-	xaxis = np.arange(1,len(BetaLasso["0"][str(j)].T)+1)
-	plt.figure()
-	for k in range(1,len(parameter)):
-		plt.plot(xaxis,BetaLasso[str(k)][str(j)].T, linestyle=':',marker='.',linewidth=0.5)
-	plt.plot(xaxis,BetaLasso["0"][str(j)].T,linestyle=':',marker='x')
-	plt.grid()
-	plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\lambda=$"+str(parameter[2]),r"$\lambda=$"+str(parameter[3])])
-	plt.title(r"Lasso parameters for different $\lambda$.")#" Noise factor = "+str(noise[n]))
-	plt.savefig("realdata/lasso/lasso_boot_parameters"+str(j+1))#+"noise"+str(n+1))
-	#plt.show()
+    # Plot parameters for different lambdas
+    for j in range(5):
+    	xaxis = np.arange(1,len(BetaLasso["0"][str(j)].T)+1)
+    	plt.figure()
+    	for k in range(1,len(parameter)):
+    		plt.plot(xaxis,BetaLasso[str(k)][str(j)].T, linestyle=':',marker='.',linewidth=0.5)
+    	plt.plot(xaxis,BetaLasso["0"][str(j)].T,linestyle=':',marker='x')
+    	plt.grid()
+    	plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\lambda=$"+str(parameter[2]),r"$\lambda=$"+str(parameter[3])])
+    	plt.title(r"Lasso parameters for different $\lambda$. Noise factor = "+str(noise[n]))
+    	plt.savefig("realdata/lasso/lasso_boot_parameters"+str(j+1)+"noise"+str(n+1))
+    	#plt.show()
