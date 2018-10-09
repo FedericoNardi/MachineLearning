@@ -1,0 +1,35 @@
+------ OLS without resampling ------
+patch 1, from (3181, 183) to (3281, 233)
+mse: 275.859
+R2: 0.990135
+variance: 27688.5
+bias: 27964.4
+
+------ OLS without resampling ------
+patch 2, from (1466, 886) to (1566, 936)
+mse: 1819.14
+R2: 0.924398
+variance: 22242.8
+bias: 24061.9
+
+------ OLS without resampling ------
+patch 3, from (1062, 1599) to (1162, 1649)
+mse: 164.328
+R2: 0.991146
+variance: 18396.1
+bias: 18560.4
+
+------ OLS without resampling ------
+patch 4, from (2552, 499) to (2652, 549)
+mse: 259.324
+R2: 0.926133
+variance: 3251.35
+bias: 3510.67
+
+------ OLS without resampling ------
+patch 5, from (962, 859) to (1062, 909)
+mse: 209.899
+R2: 0.953038
+variance: 4259.69
+bias: 4469.59
+

@@ -253,6 +253,7 @@ def Lasso(x, y, z, biasL, degree, resampling):
 
 terrain1 = imread('terrain1.tif')
 terrain1 = terrain1[1550:1600,800:850]
+
 #plt.figure()
 #plt.imshow(terrain1, cmap='gray')
 #plt.show()

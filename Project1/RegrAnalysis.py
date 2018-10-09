@@ -26,7 +26,7 @@ def LinearRegressionOLS(x,y,z,degree,resampling):
     data = poly.fit_transform(np.concatenate((x, y), axis=1))
     if resampling==True:
         print("------ OLS with resampling ------")
-        sample_steps = 10
+        sample_steps = 100
         VarBeta = np.zeros([data.shape[1],1])
         Beta_boot = np.zeros([data.shape[1],sample_steps])
         Beta = np.zeros([data.shape[1],1])
@@ -288,26 +288,6 @@ y = np.random.rand(size,1)
 z = FrankeFunction(x,y) + 0.1*np.random.randn(size,1)
 print(x.shape, y.shape, z.shape)
 
-
-# Load terrain
-
-# terrain1 = imread('terrain1.tif')
-# terrain1 = terrain1[0:100,0:100]
-# plt.figure()
-# plt.imshow(terrain1, cmap='gray')
-# plt.savefig("fittingfunction")
-# #plt.show()
-# terrain1 = np.reshape(terrain1,-1)
-# # Intialize grid
-# size = 100
-# x=(np.array([i for i in range(size)]*size)[np.newaxis]).T
-# x=x/size
-
-# y=[i for i in range(size)]
-# y = (np.array(y*size)[np.newaxis]).T
-# y=y/size
-# z = (np.array(terrain1)[np.newaxis]).T
-# print(x.shape,y.shape,z.shape)
  
 # Fit with OLS without resampling
 BetaOLS = {}
@@ -331,7 +311,7 @@ for j in range(5):
 	plt.title(title)
 	plt.xlabel(r"$j$th parameter")
 	plt.ylabel(r"$\beta_j$")
-	plt.savefig("figures/OLS/OLS_parameters"+str(j+1))
+	plt.savefig("realdata/OLS/OLS_parameters"+str(j+1))
 	#plt.show()
 
 # Plot MSE nd R2 score for OLS
@@ -349,7 +329,7 @@ axs = plt.gca()
 axs.set_ylabel(r"$R^2$ score")
 axs.set_xlabel(r"poly degree")
 plt.grid()
-plt.savefig("figures/OLS/OLS_err")
+plt.savefig("realdata/OLS/OLS_err")
 #plt.show()
 
 
@@ -380,7 +360,7 @@ for j in range(5):
 	plt.grid()
 	title = r"OLS fit with resampling - weights $\beta_j$ for "+str(j+1)+". degree polynomial"
 	plt.title(title)
-	plt.savefig("figures/OLS/OLS_boot_parameters"+str(j+1))
+	plt.savefig("realdata/OLS/OLS_boot_parameters"+str(j+1))
 	plt.xlabel(r"$j$th parameter")
 	plt.ylabel(r"$\beta_j$")
 	#plt.show()
@@ -400,7 +380,7 @@ axs = plt.gca()
 axs.set_ylabel(r"$R^2$ score")
 axs.set_xlabel(r"poly degree")
 plt.grid()
-plt.savefig("figures/OLS/OLS_boot_err")
+plt.savefig("realdata/OLS/OLS_boot_err")
 #plt.show()
 
 
@@ -447,7 +427,7 @@ plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\
 plt.grid()
 plt.subplot(212)
 plt.grid()
-plt.savefig("figures/ridge/ridge_err")#+"noise"+str(n+1))
+plt.savefig("realdata/ridge/ridge_err")#+"noise"+str(n+1))
 #plt.show()
 
 # Plot parameters for different lambdas
@@ -460,7 +440,7 @@ for j in range(5):
 	plt.grid()
 	plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\lambda=$"+str(parameter[2]),r"$\lambda=$"+str(parameter[3])])
 	plt.title(r"Ridge parameters for different $\lambda$.") #Noise factor = "+str(noise[n]))
-	plt.savefig("figures/ridge/ridge_parameters"+str(j+1)) #+"noise"+str(n+1))
+	plt.savefig("realdata/ridge/ridge_parameters"+str(j+1)) #+"noise"+str(n+1))
 	#plt.show()
 
 
@@ -502,7 +482,7 @@ plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\
 plt.grid()
 plt.subplot(212)
 plt.grid()
-plt.savefig("figures/ridge/ridge_boot_err")#+"noise"+str(n+1))
+plt.savefig("realdata/ridge/ridge_boot_err")#+"noise"+str(n+1))
 #plt.show()
 
 # Plot parameters for different lambdas
@@ -515,7 +495,7 @@ for j in range(5):
 	plt.grid()
 	plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\lambda=$"+str(parameter[2]),r"$\lambda=$"+str(parameter[3])])
 	plt.title(r"Ridge parameters for different $\lambda$.")#" Noise factor = "+str(noise[n]))
-	plt.savefig("figures/ridge/ridge_boot_parameters"+str(j+1))#+"noise"+str(n+1))
+	plt.savefig("realdata/ridge/ridge_boot_parameters"+str(j+1))#+"noise"+str(n+1))
 	#plt.show()
 
 
@@ -557,7 +537,7 @@ plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\
 plt.grid()
 plt.subplot(212)
 plt.grid()
-plt.savefig("figures/lasso/lasso_err")#+"noise"+str(n+1))
+plt.savefig("realdata/lasso/lasso_err")#+"noise"+str(n+1))
 #plt.show()
 # Plot parameters for different lambdas
 for j in range(5):
@@ -569,7 +549,7 @@ for j in range(5):
 	plt.grid()
 	plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\lambda=$"+str(parameter[2]),r"$\lambda=$"+str(parameter[3])])
 	plt.title(r"Lasso parameters for different $\lambda$.")#" Noise factor = "+str(noise[n]))
-	plt.savefig("figures/lasso/lasso_parameters"+str(j+1))#+"noise"+str(n+1))
+	plt.savefig("realdata/lasso/lasso_parameters"+str(j+1))#+"noise"+str(n+1))
 	#plt.show()
 
 
@@ -610,7 +590,7 @@ plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\
 plt.grid()
 plt.subplot(212)
 plt.grid()
-plt.savefig("figures/lasso/lasso_boot_err")#+"noise"+str(n+1))
+plt.savefig("realdata/lasso/lasso_boot_err")#+"noise"+str(n+1))
 #plt.show()
 
 # Plot parameters for different lambdas
@@ -623,5 +603,5 @@ for j in range(5):
 	plt.grid()
 	plt.legend([r"$\lambda=$"+str(parameter[0]),r"$\lambda=$"+str(parameter[1]),r"$\lambda=$"+str(parameter[2]),r"$\lambda=$"+str(parameter[3])])
 	plt.title(r"Lasso parameters for different $\lambda$.")#" Noise factor = "+str(noise[n]))
-	plt.savefig("figures/lasso/lasso_boot_parameters"+str(j+1))#+"noise"+str(n+1))
+	plt.savefig("realdata/lasso/lasso_boot_parameters"+str(j+1))#+"noise"+str(n+1))
 	#plt.show()
