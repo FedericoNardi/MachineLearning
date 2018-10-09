@@ -118,6 +118,8 @@ Bias
 0.09961690342193522
 Variance
 4.271945908708926e-05
+---noise:  0.001
+lambda:  1e-08
 ------ RIDGE without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.02309100208582361
@@ -183,6 +185,7 @@ Bias
 0.08856853757387305
 Variance
 0.08667234873749241
+lambda:  1e-06
 ------ RIDGE without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.023091002085823733
@@ -250,6 +253,7 @@ Variance
 0.08662875836005247
 /home/federico/anaconda3/lib/python3.6/site-packages/matplotlib/cbook/deprecation.py:107: MatplotlibDeprecationWarning: Adding an axes using the same arguments as a previous axes currently reuses the earlier instance.  In a future version, a new instance will always be created and returned.  Meanwhile, this warning can be suppressed, and the future behavior ensured, by passing a unique label to each axes instance.
   warnings.warn(message, mplDeprecation, stacklevel=1)
+lambda:  0.0001
 ------ RIDGE without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.02309100208703996
@@ -315,6 +319,7 @@ Bias
 0.08856853757388691
 Variance
 0.08519979036499549
+lambda:  0.01
 ------ RIDGE without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.02309101424087628
@@ -380,6 +385,8 @@ Bias
 0.08856853792242439
 Variance
 0.07986776839526573
+---noise:  0.01
+lambda:  1e-08
 ------ RIDGE without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.023309136506842524
@@ -445,6 +452,7 @@ Bias
 0.08884401403884447
 Variance
 0.08692149523641544
+lambda:  1e-06
 ------ RIDGE without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.023309136506842645
@@ -510,6 +518,7 @@ Bias
 0.08884401403884445
 Variance
 0.08687586215892805
+lambda:  0.0001
 ------ RIDGE without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.023309136508060158
@@ -575,6 +584,7 @@ Bias
 0.08884401403885851
 Variance
 0.08540029742170699
+lambda:  0.01
 ------ RIDGE without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.023309148674685143
@@ -642,6 +652,8 @@ Variance
 0.08000884731523808
 /home/federico/anaconda3/lib/python3.6/site-packages/matplotlib/pyplot.py:537: RuntimeWarning: More than 20 figures have been opened. Figures created through the pyplot interface (`matplotlib.pyplot.figure`) are retained until explicitly closed and may consume too much memory. (To control this warning, see the rcParam `figure.max_open_warning`).
   max_open_warning, RuntimeWarning)
+---noise:  0.1
+lambda:  1e-08
 ------ RIDGE without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.03626101758963456
@@ -707,6 +719,7 @@ Bias
 0.10238300101553165
 Variance
 0.09005915094958808
+lambda:  1e-06
 ------ RIDGE without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.03626101758963469
@@ -772,6 +785,7 @@ Bias
 0.10238300101553165
 Variance
 0.09001991816916549
+lambda:  0.0001
 ------ RIDGE without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.036261017590861415
@@ -837,6 +851,7 @@ Bias
 0.10238300101554497
 Variance
 0.08863513627243451
+lambda:  0.01
 ------ RIDGE without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.03626102984961878
@@ -902,6 +917,8 @@ Bias
 0.10238300137743853
 Variance
 0.08236386545228058
+---noise:  0.5
+lambda:  1e-08
 ------ RIDGE without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.3104555222007464
@@ -967,6 +984,7 @@ Bias
 0.389635026897192
 Variance
 0.11503452030563201
+lambda:  1e-06
 ------ RIDGE without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.3104555222007466
@@ -1032,6 +1050,7 @@ Bias
 0.3896350268971919
 Variance
 0.1148187777043062
+lambda:  0.0001
 ------ RIDGE without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.3104555222021491
@@ -1097,6 +1116,7 @@ Bias
 0.3896350268971951
 Variance
 0.10915734512005466
+lambda:  0.01
 ------ RIDGE without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.31045553621758176
@@ -1162,6 +1182,8 @@ Bias
 0.3896350272099793
 Variance
 0.10120307105509758
+--- noise:  0.001
+lambda:  1e-08
 ------ RIDGE with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.02312455203705949
@@ -1227,6 +1249,7 @@ Bias
 0.08864536772927256
 Variance
 0.08675170863821847
+lambda:  1e-06
 ------ RIDGE with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.023124552037059612
@@ -1292,6 +1315,7 @@ Bias
 0.08864536772927256
 Variance
 0.08670796461208465
+lambda:  0.0001
 ------ RIDGE with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.02312455203827657
@@ -1357,6 +1381,7 @@ Bias
 0.08864536772928647
 Variance
 0.08527451529734997
+lambda:  0.01
 ------ RIDGE with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.023124564199315512
@@ -1422,6 +1447,8 @@ Bias
 0.08864536807815437
 Variance
 0.07993971387530212
+--- noise:  0.01
+lambda:  1e-08
 ------ RIDGE with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.022947573731602618
@@ -1487,6 +1514,7 @@ Bias
 0.08862503978294538
 Variance
 0.08664459141816719
+lambda:  1e-06
 ------ RIDGE with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.022947573731602743
@@ -1552,6 +1580,7 @@ Bias
 0.08862503978294538
 Variance
 0.0865998867323774
+lambda:  0.0001
 ------ RIDGE with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.022947573732822406
@@ -1617,6 +1646,7 @@ Bias
 0.0886250397829595
 Variance
 0.08515099470692596
+lambda:  0.01
 ------ RIDGE with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.022947585921009588
@@ -1682,6 +1712,8 @@ Bias
 0.0886250401349663
 Variance
 0.07988496235296455
+--- noise:  0.1
+lambda:  1e-08
 ------ RIDGE with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.03333917676527961
@@ -1747,6 +1779,7 @@ Bias
 0.09673815216056308
 Variance
 0.08455277736129642
+lambda:  1e-06
 ------ RIDGE with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.033339176765279734
@@ -1812,6 +1845,7 @@ Bias
 0.09673815216056308
 Variance
 0.08449583110575097
+lambda:  0.0001
 ------ RIDGE with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.03333917676646152
@@ -1877,6 +1911,7 @@ Bias
 0.09673815216057678
 Variance
 0.082783895269997
+lambda:  0.01
 ------ RIDGE with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.03333918857619221
@@ -1942,6 +1977,8 @@ Bias
 0.09673815250171225
 Variance
 0.07786766138068085
+--- noise:  0.5
+lambda:  1e-08
 ------ RIDGE with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.2538468736350911
@@ -2007,6 +2044,7 @@ Bias
 0.30754376001040734
 Variance
 0.08342659357037606
+lambda:  1e-06
 ------ RIDGE with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.25384687363509123
@@ -2072,6 +2110,7 @@ Bias
 0.3075437600104073
 Variance
 0.08325592807729469
+lambda:  0.0001
 ------ RIDGE with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.253846873636133
@@ -2137,6 +2176,7 @@ Bias
 0.3075437600104283
 Variance
 0.07800506237259794
+lambda:  0.01
 ------ RIDGE with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.2538468840467043
@@ -2202,6 +2242,8 @@ Bias
 0.30754376047409915
 Variance
 0.07103776445354312
+--- noise:  0.001
+lambda:  1e-08
 ------ LASSO without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.02309488283354886
@@ -2269,6 +2311,7 @@ Bias
 0.08859597259941546
 Variance
 0.0792926901458838
+lambda:  1e-06
 ------ LASSO without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.023094882886929492
@@ -2334,6 +2377,7 @@ Bias
 0.0885959725761587
 Variance
 0.07928138848202866
+lambda:  0.0001
 ------ LASSO without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.023095416598567432
@@ -2399,6 +2443,7 @@ Bias
 0.0885959744434813
 Variance
 0.07781788947188817
+lambda:  0.01
 ------ LASSO without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.028367284803644092
@@ -2466,6 +2511,8 @@ Bias
 0.08869624651897995
 Variance
 0.03649496614013916
+--- noise:  0.01
+lambda:  1e-08
 ------ LASSO without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.02327154000759604
@@ -2531,6 +2578,7 @@ Bias
 0.0883786985377177
 Variance
 0.07898396262593314
+lambda:  1e-06
 ------ LASSO without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.023271540060976335
@@ -2596,6 +2644,7 @@ Bias
 0.0883786985162279
 Variance
 0.07897248854348313
+lambda:  0.0001
 ------ LASSO without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.02327207376737452
@@ -2661,6 +2710,7 @@ Bias
 0.08837870010147807
 Variance
 0.07751376695950957
+lambda:  0.01
 ------ LASSO without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.0285452221681898
@@ -2726,6 +2776,8 @@ Bias
 0.08847897443119097
 Variance
 0.03621525010413562
+--- noise:  0.1
+lambda:  1e-08
 ------ LASSO without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.030065702915796303
@@ -2791,6 +2843,7 @@ Bias
 0.09733919841182301
 Variance
 0.07970916513105311
+lambda:  1e-06
 ------ LASSO without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.03006570296919898
@@ -2856,6 +2909,7 @@ Bias
 0.09733919838266898
 Variance
 0.07969680100858093
+lambda:  0.0001
 ------ LASSO without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.030066236885461946
@@ -2921,6 +2975,7 @@ Bias
 0.09733920008770369
 Variance
 0.07823384010680688
+lambda:  0.01
 ------ LASSO without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.03533826032687674
@@ -2986,6 +3041,8 @@ Bias
 0.09743947202031351
 Variance
 0.03795703055718144
+--- noise:  0.5
+lambda:  1e-08
 ------ LASSO without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.25348773604338914
@@ -3051,6 +3108,7 @@ Bias
 0.3161991790193508
 Variance
 0.0805771353989126
+lambda:  1e-06
 ------ LASSO without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.2534877360963695
@@ -3116,6 +3174,7 @@ Bias
 0.31619917903576544
 Variance
 0.08056282964997137
+lambda:  0.0001
 ------ LASSO without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.25348826595658397
@@ -3181,6 +3240,7 @@ Bias
 0.31619918397396657
 Variance
 0.07878734601068461
+lambda:  0.01
 ------ LASSO without resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.25876394407674674
@@ -3246,9 +3306,11 @@ Bias
 0.3163001374124036
 Variance
 0.03350569618943201
+--- noise:  0.001
+lambda:  0
 ------ LASSO with resampling ------
 RegrAnalysis.py:234: UserWarning: With alpha=0, this algorithm does not converge well. You are advised to use the LinearRegression estimator
-  lasso_reg.fit(pool,z_sample)
+  Lasso_reg.fit(pool,z_sample)
 /home/federico/anaconda3/lib/python3.6/site-packages/sklearn/linear_model/coordinate_descent.py:477: UserWarning: Coordinate descent with no regularization may lead to unexpected results and is discouraged.
   positive)
 ------- 1 th degree polynomial -------
@@ -3315,6 +3377,7 @@ Bias
 0.08856274652036927
 Variance
 0.07920076088474617
+lambda:  1e-08
 ------ LASSO with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.02307892057020018
@@ -3380,6 +3443,7 @@ Bias
 0.08856273785117506
 Variance
 0.07936306738488773
+lambda:  1e-06
 ------ LASSO with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.02308082493662984
@@ -3445,6 +3509,7 @@ Bias
 0.08856329030582742
 Variance
 0.07964920387162419
+lambda:  0.0001
 ------ LASSO with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.023081357535014647
@@ -3510,6 +3575,7 @@ Bias
 0.08856308127977218
 Variance
 0.0783245619793552
+lambda:  0.01
 ------ LASSO with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.028322527647861077
@@ -3575,6 +3641,8 @@ Bias
 0.08864591871675859
 Variance
 0.036517864224294615
+--- noise:  0.01
+lambda:  0
 ------ LASSO with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.023380884840875475
@@ -3640,6 +3708,7 @@ Bias
 0.08860543363611859
 Variance
 0.0792776167658005
+lambda:  1e-08
 ------ LASSO with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.023380075301476653
@@ -3705,6 +3774,7 @@ Bias
 0.08860539901618789
 Variance
 0.07946178719327614
+lambda:  1e-06
 ------ LASSO with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.02338005595111066
@@ -3770,6 +3840,7 @@ Bias
 0.08860558282847458
 Variance
 0.07991817930723577
+lambda:  0.0001
 ------ LASSO with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.023381162372020432
@@ -3835,6 +3906,7 @@ Bias
 0.08860584781862241
 Variance
 0.07809488753309236
+lambda:  0.01
 ------ LASSO with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.02881628911973855
@@ -3900,6 +3972,8 @@ Bias
 0.08871596950758553
 Variance
 0.036328840063099804
+--- noise:  0.1
+lambda:  0
 ------ LASSO with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.0315487896604716
@@ -3965,6 +4039,7 @@ Bias
 0.09833010588218624
 Variance
 0.07988244465565744
+lambda:  1e-08
 ------ LASSO with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.03154967043674021
@@ -4030,6 +4105,7 @@ Bias
 0.09833063011118343
 Variance
 0.08035198040901603
+lambda:  1e-06
 ------ LASSO with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.03154973320965801
@@ -4095,6 +4171,7 @@ Bias
 0.09833053968372216
 Variance
 0.08127314991002683
+lambda:  0.0001
 ------ LASSO with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.03155172089646102
@@ -4160,6 +4237,7 @@ Bias
 0.0983301732039702
 Variance
 0.0790186014587639
+lambda:  0.01
 ------ LASSO with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.03679690691979334
@@ -4225,6 +4303,8 @@ Bias
 0.09841638754502079
 Variance
 0.03728605481811809
+--- noise:  0.5
+lambda:  0
 ------ LASSO with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.2824208425405296
@@ -4290,6 +4370,7 @@ Bias
 0.3322440927144854
 Variance
 0.06772304908686246
+lambda:  1e-08
 ------ LASSO with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.2824307142649682
@@ -4355,6 +4436,7 @@ Bias
 0.3322456027828662
 Variance
 0.0689089289178146
+lambda:  1e-06
 ------ LASSO with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.2824207506738576
@@ -4420,6 +4502,7 @@ Bias
 0.33224399275764405
 Variance
 0.07091188038959195
+lambda:  0.0001
 ------ LASSO with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.28241825370580736
@@ -4485,6 +4568,7 @@ Bias
 0.33224403999300695
 Variance
 0.06787174009635197
+lambda:  0.01
 ------ LASSO with resampling ------
 ------- 1 th degree polynomial -------
  MSE:  0.2880253080772456
