@@ -1,0 +1,7 @@
+Code folder for FYS-STK4155 Project 1
+- fit_parameters: folder with text files showing parameters resulting from regressions
+- franke: folder containing plots produced in the first part of project (fit methods on the Franke function)
+realdata: folder containing plots produced in the second part of project (fit over terrain data)
+- RegrAnalysis.py: Python code with regression on Franke function
+- realdata.py: Python code for the terrain data analysis
+
