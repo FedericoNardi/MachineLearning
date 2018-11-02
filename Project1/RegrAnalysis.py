@@ -2,9 +2,7 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn import linear_model
-from imageio import imread
 from sklearn.linear_model import LinearRegression
-import random
 import numpy as np
 import scipy as scl
 
@@ -43,7 +41,7 @@ def LinearRegressionOLS(x,y,z,degree,resampling):
             diagVar = np.zeros([V.shape[0],V.shape[1]])
             np.fill_diagonal(diag,D**(-1))
             np.fill_diagonal(diagVar,D**(-2))
-            Beta_sample = V.dot(diag).dot(U.T).dot(z) 
+            Beta_sample = V.dot(diag).dot(U.T).dot(z_sample) 
             Beta_boot.T[i] = Beta_sample.T
 
         for i in range(data.shape[1]):
@@ -60,7 +58,6 @@ def LinearRegressionOLS(x,y,z,degree,resampling):
         np.fill_diagonal(diag,D**(-1))
         np.fill_diagonal(diagVar,D**(-2))
         Beta = V.dot(diag).dot(U.T).dot(z) 
-        H = data.T .dot(data)
         zlin = data .dot(Beta)
         MSE = mean_squared_error(z,zlin)
         VarBeta = MSE*(np.diag(V.dot(diagVar).dot(Vt))[np.newaxis]).T
@@ -151,10 +148,10 @@ def k_fold(x, y, z, Pol_deg, method, biasLambda, k):
     R2S_sampling = R2S_sampling/k
     Beta_sampling = Beta_sampling/k
     VarBeta_sampling = VarBeta_sampling/k
-    # Error, Bias, Variance
-    error = np.sum((zlin - z)**2)/data.shape[0] #np.mean( np.mean((z - zlin)**2, axis=1, keepdims=True) )
-    variance = np.sum( (zlin - np.mean(zlin))**2 )/data.shape[0] #np.mean( (z - np.mean(zlin, axis=1, keepdims=True))**2 )
-    bias = np.sum((z - np.mean(zlin))**2)/data.shape[0] #np.mean( np.var(zlin, axis=1, keepdims=True) )
+#    # Error, Bias, Variance
+#    error = np.sum((zlin - z)**2)/data.shape[0] #np.mean( np.mean((z - zlin)**2, axis=1, keepdims=True) )
+#    variance = np.sum( (zlin - np.mean(zlin))**2 )/data.shape[0] #np.mean( (z - np.mean(zlin, axis=1, keepdims=True))**2 )
+#    bias = np.sum((z - np.mean(zlin))**2)/data.shape[0] #np.mean( np.var(zlin, axis=1, keepdims=True) )
     print("MSE")
     print(MSE_sampling)
     print("Error")
