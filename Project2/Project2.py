@@ -28,7 +28,8 @@ def LinearRegression(x,y,resampling):
         Beta_boot = np.zeros([x.shape[1],sample_steps])
         Beta = np.zeros([x.shape[1],1])
         pool = np.zeros(x.shape)
-        y_sample = np.zeros([x.shape[0],1])            
+        y_sample = np.zeros([x.shape[0],1])   
+        ylinsample = np.zeros([y.shape[0],sample_steps])         
         for i in range(sample_steps):
             for k in range(x.shape[0]):
                 index = np.random.randint(x.shape[0])
@@ -40,12 +41,42 @@ def LinearRegression(x,y,resampling):
             np.fill_diagonal(Sigma,D**(-1))
             # Parameters of the regression
             Beta_sample = V .dot(Sigma) .dot(U.T) .dot(y_sample)
+            tmp = x .dot(Beta_sample)
+            ylinsample.T[i] = tmp[:,0]
             Beta_boot.T[i] = Beta_sample.T
         for i in range(x.shape[1]):
             Beta[i] = np.mean(Beta_boot[i])
             VarBeta[i] = np.var(Beta_boot[i])
         ylin = x .dot(Beta)
         MSE = mean_squared_error(y,ylin)
+        R2S = r2_score(y,ylin)
+        error_tmp = np.zeros([y.shape[0],1])
+        ymean = np.zeros([y.shape[0],1])
+        variance_tmp = np.zeros([y.shape[0],1])
+        for i in range(sample_steps):
+            error_tmp = error_tmp + (y - ylinsample[:,i])**2
+        error_tmp = error_tmp/sample_steps
+        error = np.sum(error_tmp)/y.shape[0]
+        for i in range(sample_steps):
+            ymean = ymean + ylinsample[:,i]
+        ymean = ymean/sample_steps
+        bias = np.sum((y - ymean)**2)/y.shape[0]
+        for i in range(sample_steps):
+            variance_tmp = variance_tmp + (ylinsample[:,i] - ymean)**2
+        variance_tmp = variance_tmp/sample_steps
+        variance = np.sum(variance_tmp)/y.shape[0]
+        print("Beta:")
+        print(Beta)
+        print("Beta variance:")
+        print(VarBeta)
+        print("Model:")
+        print(ylin)
+        print("Errors of the model")
+        print("MSE: ", MSE, "\n")
+        print("R2 score: ", R2S, "\n")
+        print("Error", error, "\n")
+        print("Bias", bias, "\n")
+        print("Variance", variance, "\n")
     else:
         print("------ OLS without resampling ------")
         # Single Value decomposition to be always able of making inverse
@@ -63,22 +94,16 @@ def LinearRegression(x,y,resampling):
         # Error on the parameters
         MSE = mean_squared_error(y,ylin)
         VarBeta = MSE*(np.diag(V .dot(SigmaVar) .dot(V.T))[np.newaxis]).T
-    R2S = r2_score(y,ylin)
-    error = np.sum((ylin - y)**2)/x.shape[0]
-    variance = np.sum((ylin - np.mean(ylin))**2 )/x.shape[0]
-    bias = np.sum((y - np.mean(ylin))**2)/x.shape[0]
-    print("Beta:")
-    print(Beta)
-    print("Beta variance:")
-    print(VarBeta)
-    print("Model:")
-    print(ylin)
-    print("Errors of the model")
-    print("MSE: ", MSE, "\n")
-    print("R2 score: ", R2S, "\n")
-    print("Error", error, "\n")
-    print("Bias", bias, "\n")
-    print("Variance", variance, "\n")
+        R2S = r2_score(y,ylin)
+        print("Beta:")
+        print(Beta)
+        print("Beta variance:")
+        print(VarBeta)
+        print("Model:")
+        print(ylin)
+        print("Errors of the model")
+        print("MSE: ", MSE, "\n")
+        print("R2 score: ", R2S, "\n")
     return Beta, VarBeta
 
 def RidgeRegression(x, y, biasR, resampling):
@@ -90,6 +115,7 @@ def RidgeRegression(x, y, biasR, resampling):
         Beta = np.zeros([x.shape[1],1])
         pool = np.zeros(x.shape)
         y_sample = np.zeros([x.shape[0],1])
+        ylinsample = np.zeros([y.shape[0],sample_steps])
         for i in range(sample_steps):
             for k in range(x.shape[0]):
                 index = np.random.randint(x.shape[0])
@@ -97,35 +123,59 @@ def RidgeRegression(x, y, biasR, resampling):
                 y_sample[k] = y[index]
             H = x.T .dot(x)
             Beta_sample = scl.linalg.inv(H + biasR*np.eye(H.shape[0])) .dot(x.T) .dot(y_sample)
+            tmp = x .dot(Beta_sample)
+            ylinsample.T[i] = tmp[:,0]
             Beta_boot.T[i] = Beta_sample.T
         for i in range(x.shape[1]):
             Beta[i] = np.mean(Beta_boot[i]) 
             VarBeta[i] = np.var(Beta_boot[i])
         ylin = x .dot(Beta)
         MSE = mean_squared_error(y,ylin)
+        R2S = r2_score(y,ylin)
+        error_tmp = np.zeros([y.shape[0],1])
+        ymean = np.zeros([y.shape[0],1])
+        variance_tmp = np.zeros([y.shape[0],1])
+        for i in range(sample_steps):
+            error_tmp = error_tmp + (y - ylinsample[:,i])**2
+        error_tmp = error_tmp/sample_steps
+        error = np.sum(error_tmp)/y.shape[0]
+        for i in range(sample_steps):
+            ymean = ymean + ylinsample[:,i]
+        ymean = ymean/sample_steps
+        bias = np.sum((y - ymean)**2)/y.shape[0]
+        for i in range(sample_steps):
+            variance_tmp = variance_tmp + (ylinsample[:,i] - ymean)**2
+        variance_tmp = variance_tmp/sample_steps
+        variance = np.sum(variance_tmp)/y.shape[0]
+        print("Beta:")
+        print(Beta)
+        print("Beta variance:")
+        print(VarBeta)
+        print("Model:")
+        print(ylin)
+        print("Errors of the model")
+        print("MSE: ", MSE, "\n")
+        print("R2 score: ", R2S, "\n")
+        print("Error", error, "\n")
+        print("Bias", bias, "\n")
+        print("Variance", variance, "\n")
     else:
         print("------ RIDGE without resampling ------")
         H = x.T .dot(x)
         Beta = scl.linalg.inv(H + biasR*np.eye(H.shape[1])) .dot(x.T) .dot(y) 
         ylin = x .dot(Beta)
         MSE = mean_squared_error(y,ylin)
+        R2S = r2_score(y,ylin)
         VarBeta = MSE * np.diag((H + biasR*H.shape[1]) .dot(H) .dot((H + biasR*H.shape[1]).T))
-    R2S = r2_score(y,ylin)
-    error = np.sum((ylin - y)**2)/x.shape[0]
-    variance = np.sum( (ylin - np.mean(ylin))**2 )/x.shape[0] 
-    bias = np.sum((y - np.mean(ylin))**2)/x.shape[0] 
-    print("Beta:")
-    print(Beta)
-    print("Beta variance:")
-    print(VarBeta)
-    print("Model:")
-    print(ylin)
-    print("Errors of the model")
-    print("MSE: ", MSE, "\n")
-    print("R2 score: ", R2S, "\n")
-    print("Error", error, "\n")
-    print("Bias", bias, "\n")
-    print("Variance", variance, "\n")
+        print("Beta:")
+        print(Beta)
+        print("Beta variance:")
+        print(VarBeta)
+        print("Model:")
+        print(ylin)
+        print("Errors of the model")
+        print("MSE: ", MSE, "\n")
+        print("R2 score: ", R2S, "\n")
     return Beta, VarBeta
 
 def LassoRegression(x, y, biasL, resampling):
@@ -138,6 +188,7 @@ def LassoRegression(x, y, biasL, resampling):
         Beta = np.zeros([x.shape[1],1])
         pool = np.zeros(x.shape)
         y_sample = np.zeros([x.shape[0],1])
+        ylinsample = np.zeros([y.shape[0],sample_steps])
         for i in range(sample_steps):
             for k in range(x.shape[0]):
                 index = np.random.randint(x.shape[0])
@@ -149,8 +200,38 @@ def LassoRegression(x, y, biasL, resampling):
         for i in range(x.shape[1]):
             Beta[i] = np.mean(Beta_boot[i]) 
             VarBeta[i] = np.var(Beta_boot[i])
+            tmp = x .dot(Beta_sample)
+            ylinsample.T[i] = tmp
         ylin = x .dot(Beta)
         MSE = mean_squared_error(y,ylin)
+        R2S = r2_score(y,ylin)
+        error_tmp = np.zeros([y.shape[0],1])
+        ymean = np.zeros([y.shape[0],1])
+        variance_tmp = np.zeros([y.shape[0],1])
+        for i in range(sample_steps):
+            error_tmp = error_tmp + (y - ylinsample[:,i])**2
+        error_tmp = error_tmp/sample_steps
+        error = np.sum(error_tmp)/y.shape[0]
+        for i in range(sample_steps):
+            ymean = ymean + ylinsample[:,i]
+        ymean = ymean/sample_steps
+        bias = np.sum((y - ymean)**2)/y.shape[0]
+        for i in range(sample_steps):
+            variance_tmp = variance_tmp + (ylinsample[:,i] - ymean)**2
+        variance_tmp = variance_tmp/sample_steps
+        variance = np.sum(variance_tmp)/y.shape[0]
+        print("Beta:")
+        print(Beta)
+        print("Beta variance:")
+        print(VarBeta)
+        print("Model:")
+        print(ylin)
+        print("Errors of the model")
+        print("MSE: ", MSE, "\n")
+        print("R2 score: ", R2S, "\n")
+        print("Error", error, "\n")
+        print("Bias", bias, "\n")
+        print("Variance", variance, "\n")
     else:
         print("------ LASSO without resampling ------")
         Lasso_reg.fit(x,y)
@@ -173,25 +254,20 @@ def LassoRegression(x, y, biasL, resampling):
                 check = 1
         if check == 0:
             VarBeta = MSE*np.diag(scl.linalg.inv(H + biasL*tmp) .dot(H) .dot(scl.linalg.inv(H + biasL*tmp)))
-    R2S = r2_score(y,ylin)
-    error = np.sum((ylin - y)**2)/x.shape[0]
-    variance = np.sum( (ylin - np.mean(ylin))**2 )/x.shape[0] 
-    bias = np.sum((y - np.mean(ylin))**2)/x.shape[0] 
-    print("Beta:")
-    print(Beta)
-    print("Model:")
-    print(ylin)
-    print("Errors of the model")
-    print("MSE: ", MSE, "\n")
-    print("R2 score: ", R2S, "\n")
-    print("Error", error, "\n")
-    print("Bias", bias, "\n")
-    print("Variance", variance, "\n")
+        R2S = r2_score(y,ylin)
+        print("Beta:")
+        print(Beta)
+        print("Beta variance:")
+        print(VarBeta)
+        print("Model:")
+        print(ylin)
+        print("Errors of the model")
+        print("MSE: ", MSE, "\n")
+        print("R2 score: ", R2S, "\n")
     return Beta, VarBeta
-
-
+        
 # I initialize the data
-L = 5;
+L = 2;
 Data = Lattice(L)
 E_Data = Data_Ising_E1(Data,L,1)
 print("The data are :")
@@ -210,10 +286,9 @@ print("The data for the regression are:")
 print(Data_Reg)
 
 # I set up the linear regression
-BetaLinNoBoot = LinearRegression(Data_Reg, E_Data, False)
-BetaRidBoot = RidgeRegression(Data_Reg, E_Data, 0.01, True)
-BetaRidNoBoot = RidgeRegression(Data_Reg, E_Data, 0.01, False)
-BetaLasBoot = LassoRegression(Data_Reg, E_Data, 0.01, True)
-BetaLasNoBoot = LassoRegression(Data_Reg, E_Data, 0.01, False)
-# 
+BetaLin, VarBetaLin  = LinearRegression(Data_Reg, E_Data, False)
+BetaRidBoot, VarBetaRidBoot = RidgeRegression(Data_Reg, E_Data, 0.01, True)
+BetaRidNoBoot, VarBetaRidNoBoot = RidgeRegression(Data_Reg, E_Data, 0.01, False)
+BetaLasBoot, VarBetaLasBoot = LassoRegression(Data_Reg, E_Data, 0.01, True)
+BetaLasNoBoot, VarBetaLasNoBoot = LassoRegression(Data_Reg, E_Data, 0.01, False)
 

@@ -148,10 +148,10 @@ def k_fold(x, y, z, Pol_deg, method, biasLambda, k):
     R2S_sampling = R2S_sampling/k
     Beta_sampling = Beta_sampling/k
     VarBeta_sampling = VarBeta_sampling/k
-#    # Error, Bias, Variance
-#    error = np.sum((zlin - z)**2)/data.shape[0] #np.mean( np.mean((z - zlin)**2, axis=1, keepdims=True) )
-#    variance = np.sum( (zlin - np.mean(zlin))**2 )/data.shape[0] #np.mean( (z - np.mean(zlin, axis=1, keepdims=True))**2 )
-#    bias = np.sum((z - np.mean(zlin))**2)/data.shape[0] #np.mean( np.var(zlin, axis=1, keepdims=True) )
+    # Error, Bias, Variance
+    error = np.sum((zlin - z)**2)/data.shape[0] #np.mean( np.mean((z - zlin)**2, axis=1, keepdims=True) )
+    variance = np.sum( (zlin - np.mean(zlin))**2 )/data.shape[0] #np.mean( (z - np.mean(zlin, axis=1, keepdims=True))**2 )
+    bias = np.sum((z - np.mean(zlin))**2)/data.shape[0] #np.mean( np.var(zlin, axis=1, keepdims=True) )
     print("MSE")
     print(MSE_sampling)
     print("Error")
