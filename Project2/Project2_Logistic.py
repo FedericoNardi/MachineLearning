@@ -189,7 +189,7 @@ def AccuracyTest(y1,y2):
 #Comment this to turn on warnings
 warnings.filterwarnings('ignore')
 
-np.random.seed() # shuffle random seed generator
+np.random.seed(42) # shuffle random seed generator
 
 # Ising model parameters
 L=40 # linear system size
