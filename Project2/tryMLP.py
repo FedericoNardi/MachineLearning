@@ -58,7 +58,7 @@ print("---- Training over",states_train.shape[0],"spin configurations ----")
 print("States per configuration: ",states_train.shape[1])
 print("---- Test over",states_test.shape[0],"spin configurations ----")
 print("States per configuration: ",states_test.shape[1])
-
+"""
 # Building the neural network
 n_inputs, n_features = states_train.shape
 n_hidden_neurons=42
@@ -87,7 +87,7 @@ for i in range(1000):
 	output_bias -= eta*dBo
 	hidden_weights -= eta*dWh
 	hidden_bias -= eta*dBh
-
+"""
 
 class NeuralNetwork:
 	def __init__(
@@ -95,7 +95,7 @@ class NeuralNetwork:
 		Xdata,
 		Ydata,
 		n_hidden_neurons=50,
-		n_categories=10,
+		n_categories=1,
 		epochs=10,
 		batch_size=100,
 		eta=0.1,
@@ -128,19 +128,20 @@ class NeuralNetwork:
 		# weighted sum of inputs to the hidden layer
 		self.z_h = np.matmul(self.Xdata, self.hidden_weights) + self.hidden_bias
 		# activation in the hidden layer
-		self.a_h = sigmoid(self.z_h)
-		
+		self.a_h = sigmoid(self.z_h)			
 		# weighted sum of inputs to the output layer
 		self.z_o = np.matmul(self.a_h, self.output_weights) + self.output_bias
+		
 
 
 	def FeedForward_out(self,X):
 	    # weighted sum of inputs to the hidden layer
-	    z_h = np.matmul(X, hidden_weights) + hidden_bias
+	    z_h = np.matmul(X, self.hidden_weights) + self.hidden_bias
 	    # activation in the hidden layer
 	    a_h = sigmoid(z_h)
 	    # weighted sum of inputs to the output layer
-	    z_o = np.matmul(a_h, output_weights) + output_bias
+	    z_o = np.matmul(a_h, self.output_weights) + self.output_bias
+	    return z_o
 
 	def BackPropagation(self):
 		error_output = self.z_o - np.reshape(self.Ydata,(len(self.Ydata),1))
@@ -175,32 +176,47 @@ class NeuralNetwork:
 				self.FeedForward()
 				self.BackPropagation()
 
+	def predict(self, X):
+		model_prediction = self.FeedForward_out(X)
+		return model_prediction
+
+
+
+
+# set up neural network
+
 epochs = 100
 batch_size = 100
 
-DNN = NeuralNetwork(
-	states_train,energies_train,
-	eta=eta,
-	lmbd=lmbd,
-	epochs=epochs,
-	batch_size=batch_size,
-	n_hidden_neurons=n_hidden_neurons,
-	n_categories=n_categories
-	)
-DNN.train()
+eta_vals = np.logspace(-6, 1, 2)
+lmbd_vals = np.logspace(-6, 1, 2)
 
+# store the models for later use
+#DNN_models = np.zeros((len(eta_vals), len(lmbd_vals)), dtype=object)
+r2_train = np.zeros([len(eta_vals), len(lmbd_vals)])
+r2_test = np.zeros([len(eta_vals), len(lmbd_vals)])
 
+# import metrics
+from sklearn.metrics import mean_squared_error, r2_score
 
+for i, eta in enumerate(eta_vals):
+	for j, lmbd in enumerate(lmbd_vals):
 
+		DNN = NeuralNetwork(
+		states_train,energies_train,
+		eta=eta,
+		lmbd=lmbd,
+		epochs=epochs,
+		batch_size=batch_size,
+		n_hidden_neurons=42,
+		)
+		DNN.train()
+		train_pred = DNN.predict(states_train)
+		test_pred = DNN.predict(states_test)
+		print(train_pred,test_pred)
 
+		r2_train = r2_score(energies_train,train_pred)
+		r2_test = r2_score(energies_test,test_pred)
 
-
-
-
-
-
-
-
-
-
-
+		print("Learning rate: ",eta)
+		print("Lambda: ",lmbd)
