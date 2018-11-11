@@ -1,4 +1,4 @@
-import numpy as np 
+import numpy as np
 import matplotlib.pyplot as plt 
 from sklearn.model_selection import train_test_split
 
@@ -10,84 +10,6 @@ def IsingEnergies(states,L):
 
 def sigmoid(x):
 	return 1/(1+np.exp(-x))
-
-def FeedForward(input):
-    # weighted sum of inputs to the hidden layer
-    z_h = np.matmul(input, hidden_weights) + hidden_bias
-    # activation in the hidden layer
-    a_h = sigmoid(z_h)
-    
-    # weighted sum of inputs to the output layer
-    z_o = np.matmul(a_h, output_weights) + output_bias
-    
-    return a_h, z_o
-
-def BackPropagation(X,Y):
-	a_h, z_o = FeedForward(X)
-	error_output = z_o - np.reshape(Y,(len(Y),1))
-	error_hidden = np.matmul(error_output, output_weights.T) * a_h * (1 - a_h)
-
-	#output layer gradients
-	output_weights_gradient = np.matmul(a_h.T,error_output)
-	output_bias_gradient = np.sum(error_output,axis=0)
-
-	#hidden layer gradients
-	hidden_weights_gradient = np.matmul(X.T, error_hidden)
-	hidden_bias_gradient = np.sum(error_hidden, axis=0)
-
-	return output_weights_gradient, output_bias_gradient, hidden_weights_gradient, hidden_bias_gradient
-
-#===========================================================================================
-
-# initialize seed 
-np.random.seed(42)
-
-# define the lattice
-L=40 #size of system
-
-states=np.random.choice([-1,1], size=(10000,L))
-energies = IsingEnergies(states,L)
-
-# Splitting data into train and test
-train_size = 0.75
-test_size=1-train_size
-
-states_train, states_test, energies_train, energies_test = train_test_split(states, energies, train_size=train_size, test_size=test_size)
-
-print("---- Training over",states_train.shape[0],"spin configurations ----")
-print("States per configuration: ",states_train.shape[1])
-print("---- Test over",states_test.shape[0],"spin configurations ----")
-print("States per configuration: ",states_test.shape[1])
-"""
-# Building the neural network
-n_inputs, n_features = states_train.shape
-n_hidden_neurons=42
-n_categories = 1
-
-# initialize weights and biases
-hidden_weights = np.random.randn(n_features, n_hidden_neurons) # randomly distributed
-hidden_bias = np.zeros(n_hidden_neurons) + 0.01
-
-output_weights = np.random.randn(n_hidden_neurons, n_categories)
-output_bias = np.zeros(n_categories) + 0.01
-
-# set up the training
-eta = 0.01
-lmbd = 0.01
-
-for i in range(1000):
-	dWo, dBo, dWh, dBh = BackPropagation(states_train, energies_train)
-
-	# regularization terms gradients
-	dWo += lmbd*output_weights
-	dWh += lmbd*output_bias
-
-	# update weights and biases
-	output_weights -= eta*dWo
-	output_bias -= eta*dBo
-	hidden_weights -= eta*dWh
-	hidden_bias -= eta*dBh
-"""
 
 class NeuralNetwork:
 	def __init__(
@@ -146,6 +68,7 @@ class NeuralNetwork:
 	def BackPropagation(self):
 		error_output = self.z_o - np.reshape(self.Ydata,(len(self.Ydata),1))
 		error_hidden = np.matmul(error_output, self.output_weights.T) * self.a_h * (1 - self.a_h)
+		#print(error_output)
 		#output layer gradients
 		self.output_weights_gradient = np.matmul(self.a_h.T,error_output)
 		self.output_bias_gradient = np.sum(error_output,axis=0)
@@ -180,7 +103,26 @@ class NeuralNetwork:
 		model_prediction = self.FeedForward_out(X)
 		return model_prediction
 
+# initialize seed 
+#np.random.seed(42)
 
+# define the lattice
+L=40 #size of system
+# Generate data
+
+states=np.random.choice([-1,1], size=(10000,L))
+energies = IsingEnergies(states,L)
+
+# Splitting data into train and test
+train_size = 0.75
+test_size=1-train_size
+
+states_train, states_test, energies_train, energies_test = train_test_split(states, energies, train_size=train_size, test_size=test_size)
+
+print("---- Training over",states_train.shape[0],"spin configurations ----")
+print("States per configuration: ",states_train.shape[1])
+print("---- Test over",states_test.shape[0],"spin configurations ----")
+print("States per configuration: ",states_test.shape[1])
 
 
 # set up neural network
@@ -188,8 +130,8 @@ class NeuralNetwork:
 epochs = 100
 batch_size = 100
 
-eta_vals = np.logspace(-6, 1, 2)
-lmbd_vals = np.logspace(-6, 1, 2)
+eta_vals = [0.005, 0.001, 0.0001, 0.00001]#np.logspace(-2, -1, 2)
+lmbd_vals = [10.0, 1.0, 0.1, 0.01, 0.0001, 0.00001]#np.logspace(-6, -5, 2)
 
 # store the models for later use
 #DNN_models = np.zeros((len(eta_vals), len(lmbd_vals)), dtype=object)
@@ -213,10 +155,32 @@ for i, eta in enumerate(eta_vals):
 		DNN.train()
 		train_pred = DNN.predict(states_train)
 		test_pred = DNN.predict(states_test)
-		print(train_pred,test_pred)
 
-		r2_train = r2_score(energies_train,train_pred)
-		r2_test = r2_score(energies_test,test_pred)
+		r2_train[i][j] = r2_score(energies_train,train_pred)
+		r2_test[i][j] = r2_score(energies_test,test_pred)
 
 		print("Learning rate: ",eta)
 		print("Lambda: ",lmbd)
+		print("R2 score on train data: ",r2_train[i][j])
+		print("R2 score on test data: ",r2_test[i][j])
+
+# Show search results
+import seaborn as sns
+
+sns.set()
+
+fig, ax = plt.subplots(figsize = (10, 10))
+sns.heatmap(r2_train, annot=True, ax=ax, cmap="viridis")
+ax.set_title(r"$R^2$ score on training data",fontsize=16)
+ax.set_ylabel("$\eta$",fontsize=13)
+ax.set_xlabel("$\lambda$",fontsize=13)
+plt.savefig("figures/MLPreg_train")
+plt.show()
+
+fig, ax = plt.subplots(figsize = (10, 10))
+sns.heatmap(r2_test, annot=True, ax=ax, cmap="viridis")
+ax.set_title(r"$R^2$ score on test data",fontsize=16)
+ax.set_ylabel("$\eta$",fontsize=13)
+ax.set_xlabel("$\lambda$",fontsize=13)
+plt.savefig("figures/MLPreg_test")
+plt.show()
