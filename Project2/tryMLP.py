@@ -184,3 +184,24 @@ ax.set_ylabel("$\eta$",fontsize=13)
 ax.set_xlabel("$\lambda$",fontsize=13)
 plt.savefig("figures/MLPreg_test")
 plt.show()
+
+# Show search results
+import seaborn as sns
+
+sns.set()
+
+fig, ax = plt.subplots(figsize = (10, 10))
+sns.heatmap(r2_train, annot=True, ax=ax, cmap="viridis")
+ax.set_title(r"$R^2$ score on training data",fontsize=16)
+ax.set_ylabel("$\eta$",fontsize=13)
+ax.set_xlabel("$\lambda$",fontsize=13)
+plt.savefig("figures/MLPreg_train")
+plt.show()
+
+fig, ax = plt.subplots(figsize = (10, 10))
+sns.heatmap(r2_test, annot=True, ax=ax, cmap="viridis")
+ax.set_title(r"$R^2$ score on test data",fontsize=16)
+ax.set_ylabel("$\eta$",fontsize=13)
+ax.set_xlabel("$\lambda$",fontsize=13)
+plt.savefig("figures/MLPreg_test")
+plt.show()
