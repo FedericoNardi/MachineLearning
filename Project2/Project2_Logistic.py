@@ -4,6 +4,7 @@ import scipy as scl
 from sklearn.model_selection import train_test_split
 import warnings
 from scipy.special import expit
+import matplotlib.pyplot as plt 
 
 def PickRandom(x,y,dim):
     X_train = np.zeros([x.shape[0],x.shape[1]])
@@ -15,20 +16,18 @@ def PickRandom(x,y,dim):
 
 def Logistic_Newton(X,y,max_iters,tolerance):
     #Initialize beta-parameters
-    X_copy = X
-    y_copy = y
-    beta    = np.zeros(X_copy.shape[1])
-    Hessian = np.zeros([X_copy.shape[0], X_copy.shape[0]])
-    X_hessian = X_copy.T
+    beta    = np.zeros(X.shape[1])
+    Hessian = np.zeros([X.shape[0], X.shape[0]])
+    X_hessian = X.T
     norm    = 100
     #first step
-    z = np.dot(X_copy, beta)
+    z = np.dot(X, beta)
     p = expit(z)
     gradient = -np.dot(X.T,y-p)
-    for i in range(X_copy.shape[1]):
-        for j in range(X_copy.shape[0]):
+    for i in range(X.shape[1]):
+        for j in range(X.shape[0]):
             X_hessian[i,j] = X_hessian[i,j]*p[j]*(1 - p[j])
-    Hessian = np.dot(X_hessian, X_copy)
+    Hessian = np.dot(X_hessian, X)
     Hessian_inv = np.linalg.pinv(Hessian)
     
     beta -= np.dot(Hessian, gradient)
@@ -38,24 +37,24 @@ def Logistic_Newton(X,y,max_iters,tolerance):
         z = np.dot(X, beta)
         p = expit(z)
 
-        gradient      = -np.dot(X_copy.T,y-p)
+        gradient      = -np.dot(X.T,y-p)
         
-        for i in range(X_copy.shape[1]):
-            for j in range(X_copy.shape[0]):
+        for i in range(X.shape[1]):
+            for j in range(X.shape[0]):
                 X_hessian[i,j] = X_hessian[i,j]*p[j]*(1 - p[j])
-        Hessian = np.dot(X_hessian, X_copy)
+        Hessian = np.dot(X_hessian, X)
         Hessian_inv = np.linalg.pinv(Hessian)
             
 
         beta         -= np.dot(Hessian_inv, gradient)
     
-        norm          = np.linalg.norm(gradient)
+        norm          = np.linalg.norm(np.dot(Hessian_inv, gradient))
 
         if(norm < tolerance):
             print("Newton method converged to given precision in %d iterations" % k)
             break
-
-#    return beta, norm    
+        
+        return beta
     
 def Logistic_GradDesc(X,y,eta,max_iters,tolerance):
     
@@ -84,7 +83,7 @@ def Logistic_GradDesc(X,y,eta,max_iters,tolerance):
             print("Gradient Descent converged to given precision in %d iterations" % k)
             break
 
-    return beta, norm
+    return beta
 
 def Logistic_SteepGradDesc(X,y,eta,max_iters,tolerance):
     
@@ -120,7 +119,8 @@ def Logistic_SteepGradDesc(X,y,eta,max_iters,tolerance):
         if(norm < tolerance):
             print("Gradient Descent converged to given precision in %d iterations" % k)
             break
-    return beta, norm
+        
+    return beta
 
 def Logistic_StocGradDesc(X,y,eta,max_iters,tolerance):
     X_copy = X
@@ -166,7 +166,7 @@ def Logistic_StocGradDesc(X,y,eta,max_iters,tolerance):
         if(norm < tolerance):
             print("Gradient Descent converged to given precision in %d iterations" % k)
             break
-    return beta, norm
+    return beta
 
 def LogisticFit(x,y,Beta):
     ymodel = np.zeros([len(y),1])
@@ -189,7 +189,7 @@ def AccuracyTest(y1,y2):
 #Comment this to turn on warnings
 warnings.filterwarnings('ignore')
 
-np.random.seed(42) # shuffle random seed generator
+np.random.seed() # shuffle random seed generator
 
 # Ising model parameters
 L=40 # linear system size
@@ -198,7 +198,7 @@ T=np.linspace(0.25,4.0,16) # set of temperatures
 T_c=2.26 # Onsager critical temperature in the TD limit
 ###### define ML parameters
 num_classes=2
-train_to_test_ratio=0.01 # training samples
+train_to_test_ratio=0.5 # training samples
 
 # path to data directory
 #path_to_data="C:\Anaconda\Programes/IsingData/"
@@ -251,27 +251,10 @@ from sklearn import linear_model
 
 # define regularisation parameter
 lmbdas=np.logspace(-5,5,11)
-
 # preallocate data
 train_accuracy=np.zeros(lmbdas.shape,np.float64)
 test_accuracy=np.zeros(lmbdas.shape,np.float64)
 critical_accuracy=np.zeros(lmbdas.shape,np.float64)
-
-train_accuracy_N=np.zeros(lmbdas.shape,np.float64)
-test_accuracy_N=np.zeros(lmbdas.shape,np.float64)
-critical_accuracy_N=np.zeros(lmbdas.shape,np.float64)
-
-train_accuracy_GD=np.zeros(lmbdas.shape,np.float64)
-test_accuracy_GD=np.zeros(lmbdas.shape,np.float64)
-critical_accuracy_GD=np.zeros(lmbdas.shape,np.float64)
-
-train_accuracy_SG=np.zeros(lmbdas.shape,np.float64)
-test_accuracy_SG=np.zeros(lmbdas.shape,np.float64)
-critical_accuracy_SG=np.zeros(lmbdas.shape,np.float64)
-
-train_accuracy_SCG=np.zeros(lmbdas.shape,np.float64)
-test_accuracy_SCG=np.zeros(lmbdas.shape,np.float64)
-critical_accuracy_SCG=np.zeros(lmbdas.shape,np.float64)
 
 train_accuracy_SGD=np.zeros(lmbdas.shape,np.float64)
 test_accuracy_SGD=np.zeros(lmbdas.shape,np.float64)
@@ -284,7 +267,7 @@ print('Logistic Stuff')
 #    # fit training data
 #    X_train_copy = X_train
 #    Y_train_copy = Y_train
-#    beta_N, norm_N = Logistic_Newton(X_train_copy,Y_train_copy, 1000, 1e-4)
+#    beta_N = Logistic_Newton(X_train_copy,Y_train_copy, 1000, 1e-4)
 #    # check accuracy
 #    Ymodel_train_N = LogisticFit(X_train,Y_train,beta_N)
 #    Ymodel_test_N = LogisticFit(X_test,Y_test,beta_N)
@@ -296,10 +279,9 @@ print('Logistic Stuff')
 #    print('accuracy: train, test, critical')
 #    print('liblin: %0.4f, %0.4f, %0.4f' %(train_accuracy_N,test_accuracy_N,critical_accuracy_N) )
 
-
 # Logistic Gradient descent
 # fit training data
-beta_GD, norm_GD = Logistic_GradDesc(X_train,Y_train, 0.1, 1000, 1e-4)
+beta_GD = Logistic_GradDesc(X_train, Y_train, 0.01, 1000, 1e-4)
 # check accuracy
 Ymodel_train_GD = LogisticFit(X_train,Y_train,beta_GD)
 Ymodel_test_GD = LogisticFit(X_test,Y_test,beta_GD)
@@ -308,13 +290,11 @@ train_accuracy_GD = AccuracyTest(Y_train,Ymodel_train_GD)
 test_accuracy_GD = AccuracyTest(Y_test,Ymodel_test_GD)
 critical_accuracy_GD = AccuracyTest(Y_critical,Ymodel_critical_GD)
 print('Gradient descent')
-print('accuracy: train, test, critical')
-print('liblin: %0.4f, %0.4f, %0.4f' %(train_accuracy_GD,test_accuracy_GD,critical_accuracy_GD) )
-
-
+print('GD: %0.4f, %0.4f, %0.4f' %(train_accuracy_GD,test_accuracy_GD,critical_accuracy_GD) )   
+      
 # Logistic Steepest Gradient descent
 # fit training data
-beta_SG, norm_SG = Logistic_SteepGradDesc(X_train,Y_train, 0.1, 1000, 1e-4)
+beta_SG = Logistic_SteepGradDesc(X_train, Y_train, 0.1, 1000, 1e-4)
 # check accuracy
 Ymodel_train_SG = LogisticFit(X_train,Y_train,beta_SG)
 Ymodel_test_SG = LogisticFit(X_test,Y_test,beta_SG)
@@ -322,14 +302,12 @@ Ymodel_critical_SG = LogisticFit(X_critical,Y_critical,beta_SG)
 train_accuracy_SG = AccuracyTest(Y_train,Ymodel_train_SG)
 test_accuracy_SG = AccuracyTest(Y_test,Ymodel_test_SG)
 critical_accuracy_SG = AccuracyTest(Y_critical,Ymodel_critical_SG)
-print('Steepest Gradient descent')
-print('accuracy: train, test, critical')
-print('liblin: %0.4f, %0.4f, %0.4f' %(train_accuracy_SG,test_accuracy_SG,critical_accuracy_SG) )
-
-
+print('Steepest gradient descent')
+print('SG: %0.4f, %0.4f, %0.4f' %(train_accuracy_SG,test_accuracy_SG,critical_accuracy_SG) )
+    
 # Logistic Steepest Gradient descent
 # fit training data
-beta_SCG, norm_SCG = Logistic_SteepGradDesc(X_train,Y_train, 0.1, 1000, 1e-4)
+beta_SCG = Logistic_SteepGradDesc(X_train,Y_train, 0.1, 1000, 1e-4)
 # check accuracy
 Ymodel_train_SCG = LogisticFit(X_train,Y_train,beta_SCG)
 Ymodel_test_SCG = LogisticFit(X_test,Y_test,beta_SCG)
@@ -337,10 +315,9 @@ Ymodel_critical_SCG = LogisticFit(X_critical,Y_critical,beta_SCG)
 train_accuracy_SCG = AccuracyTest(Y_train,Ymodel_train_SCG)
 test_accuracy_SCG = AccuracyTest(Y_test,Ymodel_test_SCG)
 critical_accuracy_SCG = AccuracyTest(Y_critical,Ymodel_critical_SCG)
-print('Stochastic Gradient descent')
-print('accuracy: train, test, critical')
-print('liblin: %0.4f, %0.4f, %0.4f' %(train_accuracy_SCG,test_accuracy_SCG,critical_accuracy_SCG) )
-    
+print('Stochastic gradient descent')
+print('SCG: %0.4f, %0.4f, %0.4f' %(train_accuracy_SCG,test_accuracy_SCG,critical_accuracy_SCG) )
+
 print('Sklearn')
 # loop over regularisation strength
 for i,lmbda in enumerate(lmbdas):
@@ -372,3 +349,22 @@ for i,lmbda in enumerate(lmbdas):
     print('SGD: %0.4f, %0.4f, %0.4f' %(train_accuracy_SGD[i],test_accuracy_SGD[i],critical_accuracy_SGD[i]) )
 
     print('finished computing %i/11 iterations' %(i+1))
+    
+    
+# plot accuracy against regularisation strength
+plt.semilogx(lmbdas,train_accuracy,'*-b',label='liblinear train')
+plt.semilogx(lmbdas,test_accuracy,'*-r',label='liblinear test')
+plt.semilogx(lmbdas,critical_accuracy,'*-g',label='liblinear critical')
+
+plt.semilogx(lmbdas,train_accuracy_SGD,'*--b',label='SGD train')
+plt.semilogx(lmbdas,test_accuracy_SGD,'*--r',label='SGD test')
+plt.semilogx(lmbdas,critical_accuracy_SGD,'*--g',label='SGD critical')
+
+plt.xlabel('$\\lambda$')
+plt.ylabel('$\\mathrm{accuracy}$')
+
+plt.grid()
+plt.legend()
+
+
+plt.show()
