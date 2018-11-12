@@ -145,7 +145,6 @@ data[np.where(data==0)]=-1 # map 0 state to -1 (Ising variable can take values +
 file_name = "IsingData/Ising2DFM_reSample_L40_T=All_labels.pkl" # this file contains 16*10000 samples taken in T=np.arange(0.25,4.0001,0.25)
 #slabels = pickle.load(open(path_to_data+file_name,'rb')) # pickle reads the file and returns the Python object (here just a 1D array with the binary labels)
 labels = pickle.load(open(file_name,'rb'))
-
 #-------------------------------------------------------------------------------
 # split data into train and test
 
@@ -194,11 +193,11 @@ print(X_test.shape[0], 'test samples')
 
 # set up neural network
 
-epochs = 100
-batch_size = 100
-
 eta_vals = [0.001, 0.0001, 0.00001]#np.logspace(-2, -1, 2)
 lmbd_vals = [1.0, 0.1, 0.01, 0.001]#np.logspace(-6, -5, 2)
+"""
+epochs = 100
+batch_size = 100
 
 train_accuracy = np.zeros((len(eta_vals), len(lmbd_vals)))
 test_accuracy = np.zeros((len(eta_vals), len(lmbd_vals)))
@@ -212,7 +211,7 @@ for i, eta in enumerate(eta_vals):
 		lmbd=lmbd,
 		epochs=epochs,
 		batch_size=batch_size,
-		n_hidden_neurons=50,
+		n_hidden_neurons=60,
 		n_categories=2
 		)
 		DNN.train()
@@ -247,3 +246,27 @@ ax.set_ylabel("$\eta$",fontsize=13)
 ax.set_xlabel("$\lambda$",fontsize=13)
 plt.savefig("figures/MLPclass_test")
 plt.show()
+
+
+"""
+eta= 0.001
+lmbd= 0.1
+
+epochs = 100
+batch_size = 100
+
+DNN = NeuralNetwork(
+		X_train,Y_train,
+		eta=eta,
+		lmbd=lmbd,
+		epochs=epochs,
+		batch_size=batch_size,
+		n_hidden_neurons=60,
+		n_categories=2
+		)
+DNN.train()
+train_pred = DNN.predict(X_train)
+test_pred = DNN.predict(X_test)
+
+print(accuracy_score(Y_train,train_pred))
+print(accuracy_score(Y_test,test_pred))

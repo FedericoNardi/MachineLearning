@@ -104,7 +104,7 @@ class NeuralNetwork:
 		return model_prediction
 
 # initialize seed 
-#np.random.seed(42)
+np.random.seed(42)
 
 # define the lattice
 L=40 #size of system
@@ -132,7 +132,7 @@ batch_size = 100
 
 eta_vals = [0.005, 0.001, 0.0001, 0.00001]#np.logspace(-2, -1, 2)
 lmbd_vals = [10.0, 1.0, 0.1, 0.01, 0.0001, 0.00001]#np.logspace(-6, -5, 2)
-
+"""
 # store the models for later use
 #DNN_models = np.zeros((len(eta_vals), len(lmbd_vals)), dtype=object)
 r2_train = np.zeros([len(eta_vals), len(lmbd_vals)])
@@ -150,7 +150,7 @@ for i, eta in enumerate(eta_vals):
 		lmbd=lmbd,
 		epochs=epochs,
 		batch_size=batch_size,
-		n_hidden_neurons=42,
+		n_hidden_neurons=42, #Life Universe and all the rest
 		)
 		DNN.train()
 		train_pred = DNN.predict(states_train)
@@ -184,3 +184,57 @@ ax.set_ylabel("$\eta$",fontsize=13)
 ax.set_xlabel("$\lambda$",fontsize=13)
 plt.savefig("figures/MLPreg_test")
 plt.show()
+"""
+
+
+# ideal lambda and lr
+lmbd = lmbd_vals[1]
+eta = eta_vals[1]
+
+
+# resampling for bias-variance analysis
+sample_steps = 200
+indices = np.arange(len(energies_test))
+
+mean_predict = np.zeros([len(energies_test),1])
+predictions=np.zeros([len(energies_test),sample_steps])
+print(predictions.shape)
+
+for i in range(sample_steps):
+	chosen_indices = np.random.choice(indices, len(energies_test),replace=True)
+	states_train=states_train[chosen_indices,:]
+	energies_train=energies_train[chosen_indices]
+
+	DNN = NeuralNetwork(
+		states_train,energies_train,
+		eta=eta,
+		lmbd=lmbd,
+		epochs=epochs,
+		batch_size=batch_size,
+		n_hidden_neurons=42,
+		)
+	
+	DNN.train()
+
+	energies_predict = DNN.predict(states_test)
+	mean_predict += energies_predict
+
+	for k in range(len(energies_test)):
+		predictions[k][i] = energies_predict[k]
+
+predictions = predictions/sample_steps
+mean_predict = mean_predict/sample_steps
+bias = np.sum( (mean_predict - energies_test)**2 )/(len(energies_test)*mean_predict.shape[0])
+variance_mat = np.zeros(energies_test.shape)
+for i in range(sample_steps):
+	for k in range(len(energies_test)):
+		variance_mat[k] += (mean_predict[k] - predictions[k,i])**2
+variance_mat /= sample_steps
+variance = np.sum(variance_mat)/(len(energies_test)*variance_mat.shape[0])
+print("Bias on model: ",bias)
+print("Variance on model: " variance)
+
+
+
+	
+
