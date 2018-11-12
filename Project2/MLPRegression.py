@@ -132,7 +132,7 @@ batch_size = 100
 
 eta_vals = [0.005, 0.001, 0.0001, 0.00001]#np.logspace(-2, -1, 2)
 lmbd_vals = [10.0, 1.0, 0.1, 0.01, 0.0001, 0.00001]#np.logspace(-6, -5, 2)
-"""
+
 # store the models for later use
 #DNN_models = np.zeros((len(eta_vals), len(lmbd_vals)), dtype=object)
 r2_train = np.zeros([len(eta_vals), len(lmbd_vals)])
@@ -184,7 +184,7 @@ ax.set_ylabel("$\eta$",fontsize=13)
 ax.set_xlabel("$\lambda$",fontsize=13)
 plt.savefig("figures/MLPreg_test")
 plt.show()
-"""
+
 
 
 # ideal lambda and lr
@@ -232,7 +232,7 @@ for i in range(sample_steps):
 variance_mat /= sample_steps
 variance = np.sum(variance_mat)/(len(energies_test)*variance_mat.shape[0])
 print("Bias on model: ",bias)
-print("Variance on model: " variance)
+print("Variance on model: ", variance)
 
 
 

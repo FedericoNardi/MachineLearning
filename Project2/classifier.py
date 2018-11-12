@@ -195,7 +195,8 @@ print(X_test.shape[0], 'test samples')
 
 eta_vals = [0.001, 0.0001, 0.00001]#np.logspace(-2, -1, 2)
 lmbd_vals = [1.0, 0.1, 0.01, 0.001]#np.logspace(-6, -5, 2)
-"""
+
+
 epochs = 100
 batch_size = 100
 
@@ -223,6 +224,7 @@ for i, eta in enumerate(eta_vals):
 
 		print("Lambda: ",lmbd)
 		print("Eta: ",eta)
+		print(train_accuracy[i][j])
 
 
 
@@ -234,39 +236,16 @@ sns.set()
 fig, ax = plt.subplots(figsize = (10, 10))
 sns.heatmap(train_accuracy, annot=True, ax=ax, cmap="viridis")
 ax.set_title(r"accuracy score on training data",fontsize=16)
-ax.set_ylabel("$\eta$",fontsize=13)
-ax.set_xlabel("$\lambda$",fontsize=13)
+ax.set_ylabel("$\lambda$",fontsize=13)
+ax.set_xlabel("$\eta$",fontsize=13)
 plt.savefig("figures/MLPclass_train")
 plt.show()
 
 fig, ax = plt.subplots(figsize = (10, 10))
 sns.heatmap(test_accuracy, annot=True, ax=ax, cmap="viridis")
 ax.set_title(r"accuracy score on test data",fontsize=16)
-ax.set_ylabel("$\eta$",fontsize=13)
-ax.set_xlabel("$\lambda$",fontsize=13)
+ax.set_ylabel("$\lambda$",fontsize=13)
+ax.set_xlabel("$\eta$",fontsize=13)
 plt.savefig("figures/MLPclass_test")
 plt.show()
 
-
-"""
-eta= 0.001
-lmbd= 0.1
-
-epochs = 100
-batch_size = 100
-
-DNN = NeuralNetwork(
-		X_train,Y_train,
-		eta=eta,
-		lmbd=lmbd,
-		epochs=epochs,
-		batch_size=batch_size,
-		n_hidden_neurons=60,
-		n_categories=2
-		)
-DNN.train()
-train_pred = DNN.predict(X_train)
-test_pred = DNN.predict(X_test)
-
-print(accuracy_score(Y_train,train_pred))
-print(accuracy_score(Y_test,test_pred))
