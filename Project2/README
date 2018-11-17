@@ -1,0 +1,8 @@
+Code folder for FYS-STK4155 Project 2
+- figures: folder containing the figures produced for the report
+- IsingData: folder containing data files from Mehta et al. (see reference in the report)
+- Logistic.py: code for the first part of the project, with OLS, Ridge and Lasso regression
+- Regression.py: code for the first part of the project, with classical logistic regression
+- MLPRegression.py: code for the second part of the project, implementing the multilayer perceptron for regression
+- MLPclassifier.py: code for the second part of the project, implementing the multilayer perceptron for classification
+
