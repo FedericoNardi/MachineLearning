@@ -45,8 +45,8 @@ TrainData['Sex'] = TrainData['Sex'].map( {'male':0,'female':1} )
 #sns.heatmap(TrainData[["Age","SibSp","Parch","Pclass", "Sex","Fare","Embarked"]].corr(),annot=True, fmt = ".2f", cmap = "coolwarm")
 
 # Explore Age vs Survived
-#g = sns.FacetGrid(TrainData, col='Survived')
-#g.map(plt.hist, 'Age', bins=20)
+g = sns.FacetGrid(TrainData, col='Pclass')
+g.map(plt.hist, 'Age', bins=20)
 
 #sns.factorplot(y="Age",x="Pclass", data=TrainData,kind="box")
 #sns.factorplot(y="Age",x="SibSp", data=TrainData,kind="box")
