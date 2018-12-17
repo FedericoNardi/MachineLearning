@@ -5,7 +5,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
+<<<<<<< HEAD
 from sklearn.neural_network import MLPClassifier
+=======
+from sklearn.linear_model import Perceptron
+from sklearn.svm import SVC
+>>>>>>> e60277935b352febf5589ed54f1397a72d106bd0
 from sklearn.ensemble import RandomForestClassifier
 
 
@@ -18,8 +23,13 @@ g = sns.FacetGrid(TrainData,col='Parch')
 g.map(sns.distplot, 'Age', bins=20, norm_hist=True)
 plt.show()
 """
+<<<<<<< HEAD
 #--------------------------------------------------------------------
 
+=======
+
+#--------------------------------------------------------------------
+>>>>>>> e60277935b352febf5589ed54f1397a72d106bd0
 # Fill holes
 TrainData.info()
 
@@ -38,8 +48,8 @@ TrainData['Sex'] = TrainData['Sex'].map( {'male':0,'female':1} )
 #sns.heatmap(TrainData[["Age","SibSp","Parch","Pclass", "Sex","Fare","Embarked"]].corr(),annot=True, fmt = ".2f", cmap = "coolwarm")
 
 # Explore Age vs Survived
-#g = sns.FacetGrid(TrainData, col='Survived')
-#g.map(plt.hist, 'Age', bins=20)
+g = sns.FacetGrid(TrainData, col='Pclass')
+g.map(plt.hist, 'Age', bins=20)
 
 #sns.factorplot(y="Age",x="Pclass", data=TrainData,kind="box")
 #sns.factorplot(y="Age",x="SibSp", data=TrainData,kind="box")
@@ -60,6 +70,7 @@ for i in range(len(NaNIndex)):
 		TrainData['Age'][NaNIndex[i]] = AgePredict
 	else:
 		TrainData['Age'][NaNIndex[i]] = AgeMedian
+<<<<<<< HEAD
 
 # Fill holes in Embarked
 index = TrainData['Embarked'][TrainData['Embarked'].isnull()].index
@@ -68,6 +79,12 @@ for i in range(len(index)):
 
 
 #----------------------------------------------------------------------
+=======
+
+
+#----------------------------------------------------------------------
+#%%
+>>>>>>> e60277935b352febf5589ed54f1397a72d106bd0
 # Drop useless
 
 # Create Family size variable
@@ -79,6 +96,7 @@ TrainData.drop(['PassengerId','Name','SibSp','Parch','Ticket','Cabin'],axis=1,in
 
 TrainData.info()
 
+<<<<<<< HEAD
 
 #---------------------------------------------------------------------
 # Convert categorical to int
@@ -89,6 +107,13 @@ TrainData['Sex'] = TrainData['Sex'].map( {'male':0,'female':1} )
 
 """
 #---------------------------------------------------------------------
+=======
+#---------------------------------------------------------------------
+# Convert categorical to int
+#print(TrainData['Embarked'].head())
+
+
+>>>>>>> e60277935b352febf5589ed54f1397a72d106bd0
 ## Correlation matrix between numerical values (SibSp Parch Age and Fare values) and Survived 
 #sns.heatmap(TrainData[["Survived","Age","Family","Pclass", "Sex","Fare","Embarked"]].corr(),annot=True, fmt = ".2f", cmap = "coolwarm")
 
@@ -119,7 +144,10 @@ g = g.set_ylabels("survival probability")
 #print(TrainData['Embarked'].head())
 """
 
+<<<<<<< HEAD
 """
+=======
+>>>>>>> e60277935b352febf5589ed54f1397a72d106bd0
 # SETTING UP REGRESSIONS
 # Split into train and test
 Xdata = TrainData.drop("Survived",axis=1)
@@ -156,6 +184,20 @@ print('Multilayer Perceptron')
 print('Accuracy on training data: ',TrainAccuracy)
 print('Accuracy on test data: ',TestAccuracy)
 
+
+# Support Vector Machines
+svc = SVC()
+svc.fit(Xtrain, Ytrain)
+TrainPredict = svc.predict(Xtrain)
+TestPredict = svc.predict(Xtest)
+
+TrainAccuracy = svc.score(Xtrain,Ytrain)
+TestAccuracy = svc.score(Xtest,Ytest)
+
+print('='*40)
+print('Support Vector Machines')
+print('Accuracy on training data: ',TrainAccuracy)
+print('Accuracy on test data: ',TestAccuracy)
 
 # Random forest
 RunForrest = RandomForestClassifier()
