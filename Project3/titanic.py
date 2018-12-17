@@ -6,6 +6,7 @@ import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.linear_model import Perceptron
+from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 
 
@@ -19,10 +20,7 @@ g.map(sns.distplot, 'Age', bins=20, norm_hist=True)
 plt.show()
 """
 
-<<<<<<< HEAD
 #--------------------------------------------------------------------
-=======
->>>>>>> 78783947bec7bb45b9a38bfdeff01f3526f39f85
 # Fill holes
 TrainData.info()
 
@@ -62,18 +60,10 @@ for i in range(len(NaNIndex)):
 		TrainData['Age'][NaNIndex[i]] = AgePredict
 	else:
 		TrainData['Age'][NaNIndex[i]] = AgeMedian
-<<<<<<< HEAD
-
-# Fill holes in Embarked
-index = TrainData['Embarked'][TrainData['Embarked'].isnull()].index
-for i in range(len(index)):	
-	TrainData['Embarked'][index[i]] = 'S'
 
 
 #----------------------------------------------------------------------
-=======
 #%%
->>>>>>> 78783947bec7bb45b9a38bfdeff01f3526f39f85
 # Drop useless
 
 # Create Family size variable
@@ -85,17 +75,11 @@ TrainData.drop(['PassengerId','Name','SibSp','Parch','Ticket','Cabin'],axis=1,in
 
 TrainData.info()
 
-<<<<<<< HEAD
-
 #---------------------------------------------------------------------
 # Convert categorical to int
-
-TrainData['Embarked'] = TrainData['Embarked'].map( {'S':0, 'C':1, 'Q':2} ).astype(np.int64)
-TrainData['Sex'] = TrainData['Sex'].map( {'male':0,'female':1} )
 #print(TrainData['Embarked'].head())
 
-#---------------------------------------------------------------------
-=======
+
 ## Correlation matrix between numerical values (SibSp Parch Age and Fare values) and Survived 
 #sns.heatmap(TrainData[["Survived","Age","Family","Pclass", "Sex","Fare","Embarked"]].corr(),annot=True, fmt = ".2f", cmap = "coolwarm")
 
@@ -125,7 +109,6 @@ g = g.set_ylabels("survival probability")
 #%%
 #print(TrainData['Embarked'].head())
 
->>>>>>> 78783947bec7bb45b9a38bfdeff01f3526f39f85
 # SETTING UP REGRESSIONS
 # Split into train and test
 Xdata = TrainData.drop("Survived",axis=1)
@@ -162,6 +145,20 @@ print('Multilayer Perceptron')
 print('Accuracy on training data: ',TrainAccuracy)
 print('Accuracy on test data: ',TestAccuracy)
 
+
+# Support Vector Machines
+svc = SVC()
+svc.fit(Xtrain, Ytrain)
+TrainPredict = svc.predict(Xtrain)
+TestPredict = svc.predict(Xtest)
+
+TrainAccuracy = svc.score(Xtrain,Ytrain)
+TestAccuracy = svc.score(Xtest,Ytest)
+
+print('='*40)
+print('Support Vector Machines')
+print('Accuracy on training data: ',TrainAccuracy)
+print('Accuracy on test data: ',TestAccuracy)
 
 # Random forest
 RunForrest = RandomForestClassifier()
