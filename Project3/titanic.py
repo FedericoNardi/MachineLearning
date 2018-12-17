@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
-from sklearn.linear_model import Perceptron
+from sklearn.neural_network import MLPClassifier
 from sklearn.ensemble import RandomForestClassifier
 
 
@@ -18,20 +18,10 @@ g = sns.FacetGrid(TrainData,col='Parch')
 g.map(sns.distplot, 'Age', bins=20, norm_hist=True)
 plt.show()
 """
-
-<<<<<<< HEAD
 #--------------------------------------------------------------------
-=======
->>>>>>> 78783947bec7bb45b9a38bfdeff01f3526f39f85
+
 # Fill holes
 TrainData.info()
-
-# Most frequent port
-freq_port = TrainData.Embarked.dropna().mode()[0]
-print("The most frequent port is")
-print(freq_port)
-
-
 
 # Fill holes in Embarked
 index = TrainData['Embarked'][TrainData['Embarked'].isnull()].index
@@ -43,6 +33,7 @@ for i in range(len(index)):
 TrainData['Embarked'] = TrainData['Embarked'].map( {'S':0, 'C':1, 'Q':2} ).astype(np.int64)
 TrainData['Sex'] = TrainData['Sex'].map( {'male':0,'female':1} )
 
+
 ## Correlation matrix between numerical values (SibSp Parch Age and Fare values) and Survived 
 #sns.heatmap(TrainData[["Age","SibSp","Parch","Pclass", "Sex","Fare","Embarked"]].corr(),annot=True, fmt = ".2f", cmap = "coolwarm")
 
@@ -52,6 +43,13 @@ TrainData['Sex'] = TrainData['Sex'].map( {'male':0,'female':1} )
 
 #sns.factorplot(y="Age",x="Pclass", data=TrainData,kind="box")
 #sns.factorplot(y="Age",x="SibSp", data=TrainData,kind="box")
+
+# Most frequent port
+#freq_port = TrainData.Embarked.dropna().mode()[0]
+#print("The most frequent port is")
+#print(freq_port)
+
+
 # Fill holes in Age
 NaNIndex = list(TrainData['Age'][TrainData['Age'].isnull()].index)
 
@@ -62,7 +60,6 @@ for i in range(len(NaNIndex)):
 		TrainData['Age'][NaNIndex[i]] = AgePredict
 	else:
 		TrainData['Age'][NaNIndex[i]] = AgeMedian
-<<<<<<< HEAD
 
 # Fill holes in Embarked
 index = TrainData['Embarked'][TrainData['Embarked'].isnull()].index
@@ -71,9 +68,6 @@ for i in range(len(index)):
 
 
 #----------------------------------------------------------------------
-=======
-#%%
->>>>>>> 78783947bec7bb45b9a38bfdeff01f3526f39f85
 # Drop useless
 
 # Create Family size variable
@@ -85,22 +79,21 @@ TrainData.drop(['PassengerId','Name','SibSp','Parch','Ticket','Cabin'],axis=1,in
 
 TrainData.info()
 
-<<<<<<< HEAD
 
 #---------------------------------------------------------------------
 # Convert categorical to int
 
 TrainData['Embarked'] = TrainData['Embarked'].map( {'S':0, 'C':1, 'Q':2} ).astype(np.int64)
 TrainData['Sex'] = TrainData['Sex'].map( {'male':0,'female':1} )
-#print(TrainData['Embarked'].head())
 
+
+"""
 #---------------------------------------------------------------------
-=======
 ## Correlation matrix between numerical values (SibSp Parch Age and Fare values) and Survived 
 #sns.heatmap(TrainData[["Survived","Age","Family","Pclass", "Sex","Fare","Embarked"]].corr(),annot=True, fmt = ".2f", cmap = "coolwarm")
 
 g = sns.factorplot(x="Sex",y="Survived",data=TrainData,kind="bar", size = 6 , 
-palette = "muted")
+	palette = "muted")
 g.despine(left=True)
 g = g.set_ylabels("survival probability")
 
@@ -122,10 +115,11 @@ g = sns.factorplot(x="Family", y="Survived",  data=TrainData,
 g.despine(left=True)
 g = g.set_ylabels("survival probability")
 
-#%%
-#print(TrainData['Embarked'].head())
 
->>>>>>> 78783947bec7bb45b9a38bfdeff01f3526f39f85
+#print(TrainData['Embarked'].head())
+"""
+
+"""
 # SETTING UP REGRESSIONS
 # Split into train and test
 Xdata = TrainData.drop("Survived",axis=1)
@@ -149,7 +143,7 @@ print('Accuracy on test data: ',TestAccuracy)
 
 
 # Multilayer perceptron
-MLP = Perceptron()
+MLP = MLPClassifier(activation='relu',solver='sgd',learning_rate='adaptive',verbose=True)
 MLP.fit(Xtrain,Ytrain)
 TrainPredict = MLP.predict(Xtrain)
 TestPredict = MLP.predict(Xtest)
@@ -176,3 +170,4 @@ print('='*40)
 print('Random Forest')
 print('Accuracy on training data: ',TrainAccuracy)
 print('Accuracy on test data: ',TestAccuracy)
+"""
