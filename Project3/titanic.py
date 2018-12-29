@@ -5,12 +5,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
-<<<<<<< HEAD
 from sklearn.neural_network import MLPClassifier
-=======
 from sklearn.linear_model import Perceptron
 from sklearn.svm import SVC
->>>>>>> e60277935b352febf5589ed54f1397a72d106bd0
 from sklearn.ensemble import RandomForestClassifier
 
 
@@ -23,13 +20,11 @@ g = sns.FacetGrid(TrainData,col='Parch')
 g.map(sns.distplot, 'Age', bins=20, norm_hist=True)
 plt.show()
 """
-<<<<<<< HEAD
-#--------------------------------------------------------------------
-
-=======
 
 #--------------------------------------------------------------------
->>>>>>> e60277935b352febf5589ed54f1397a72d106bd0
+
+
+#--------------------------------------------------------------------
 # Fill holes
 TrainData.info()
 
@@ -46,7 +41,7 @@ TrainData['Sex'] = TrainData['Sex'].map( {'male':0,'female':1} )
 
 ## Correlation matrix between numerical values (SibSp Parch Age and Fare values) and Survived 
 #sns.heatmap(TrainData[["Age","SibSp","Parch","Pclass", "Sex","Fare","Embarked"]].corr(),annot=True, fmt = ".2f", cmap = "coolwarm")
-
+"""
 # Explore Age vs Survived
 g = sns.FacetGrid(TrainData, col='Pclass')
 g.map(plt.hist, 'Age', bins=20)
@@ -58,7 +53,7 @@ g.map(plt.hist, 'Age', bins=20)
 #freq_port = TrainData.Embarked.dropna().mode()[0]
 #print("The most frequent port is")
 #print(freq_port)
-
+"""
 
 # Fill holes in Age
 NaNIndex = list(TrainData['Age'][TrainData['Age'].isnull()].index)
@@ -70,7 +65,6 @@ for i in range(len(NaNIndex)):
 		TrainData['Age'][NaNIndex[i]] = AgePredict
 	else:
 		TrainData['Age'][NaNIndex[i]] = AgeMedian
-<<<<<<< HEAD
 
 # Fill holes in Embarked
 index = TrainData['Embarked'][TrainData['Embarked'].isnull()].index
@@ -79,12 +73,7 @@ for i in range(len(index)):
 
 
 #----------------------------------------------------------------------
-=======
 
-
-#----------------------------------------------------------------------
-#%%
->>>>>>> e60277935b352febf5589ed54f1397a72d106bd0
 # Drop useless
 
 # Create Family size variable
@@ -96,18 +85,14 @@ TrainData.drop(['PassengerId','Name','SibSp','Parch','Ticket','Cabin'],axis=1,in
 
 TrainData.info()
 
-<<<<<<< HEAD
-
 #---------------------------------------------------------------------
 # Convert categorical to int
 
-TrainData['Embarked'] = TrainData['Embarked'].map( {'S':0, 'C':1, 'Q':2} ).astype(np.int64)
+TrainData['Embarked'] = TrainData['Embarked'].map( {'S':0, 'C':1, 'Q':2} )#.astype(np.int64)
 TrainData['Sex'] = TrainData['Sex'].map( {'male':0,'female':1} )
 
 
 """
-#---------------------------------------------------------------------
-=======
 #---------------------------------------------------------------------
 # Convert categorical to int
 #print(TrainData['Embarked'].head())
@@ -144,17 +129,17 @@ g = g.set_ylabels("survival probability")
 #print(TrainData['Embarked'].head())
 """
 
-<<<<<<< HEAD
 """
 =======
 >>>>>>> e60277935b352febf5589ed54f1397a72d106bd0
+"""
 # SETTING UP REGRESSIONS
 # Split into train and test
 Xdata = TrainData.drop("Survived",axis=1)
 Ydata = TrainData['Survived']
 
 Xtrain, Xtest, Ytrain, Ytest = train_test_split(Xdata, Ydata, train_size=0.75)
-
+"""
 # Logistic regression
 Logistic = LogisticRegression()
 Logistic.fit(Xtrain,Ytrain)
@@ -198,12 +183,33 @@ print('='*40)
 print('Support Vector Machines')
 print('Accuracy on training data: ',TrainAccuracy)
 print('Accuracy on test data: ',TestAccuracy)
-
+"""
 # Random forest
-RunForrest = RandomForestClassifier()
+RunForrest = RandomForestClassifier(n_estimators=10)
 RunForrest.fit(Xtrain,Ytrain)
 TrainPredict = RunForrest.predict(Xtrain)
 TestPredict = RunForrest.predict(Xtest)
+
+estimator = RunForrest.estimators_[5]
+
+from sklearn.tree import export_graphviz
+# Export as dot file
+export_graphviz(estimator, out_file='tree.dot', 
+                feature_names = TrainData.feature_names,
+                class_names = TrainData.target_names,
+                rounded = True, proportion = False, 
+                precision = 2, filled = True)
+
+# Convert to png
+from subprocess import call
+call(['dot', '-Tpng', 'tree.dot', '-o', 'tree.png', '-Gdpi=600'])
+
+# Display in python
+import matplotlib.pyplot as plt
+plt.figure(figsize = (14, 18))
+plt.imshow(plt.imread('tree.png'))
+plt.axis('off');
+plt.show();
 
 TrainAccuracy = RunForrest.score(Xtrain,Ytrain)
 TestAccuracy = RunForrest.score(Xtest,Ytest)
@@ -212,4 +218,3 @@ print('='*40)
 print('Random Forest')
 print('Accuracy on training data: ',TrainAccuracy)
 print('Accuracy on test data: ',TestAccuracy)
-"""

@@ -1,0 +1,5 @@
+Code folder for FYS-STK4155 Project 3
+- Figures: folder containing the figures produced for the report
+- Dataset: folder containing the dataset downoaded from kaggle: https://www.kaggle.com/c/titanic/data
+- titanic.py: code for the project, implementing data analysis and classifiers
+
